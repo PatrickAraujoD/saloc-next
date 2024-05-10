@@ -2,7 +2,7 @@ import { LetterSpan } from './components/letter-span'
 
 export function Header() {
   return (
-    <header className="flex justify-between px-6 md:px-20 py-10 items-center bg-blue-900 text-white">
+    <header className="flex justify-between px-6 md:px-20 py-10 items-center bg-blue-950 text-white">
       <div className="flex flex-col gap-2">
         <div className="flex gap-2 md:gap-4">
           <LetterSpan letter="s" />

@@ -1,8 +1,8 @@
 'use client'
+import { ClassList } from '@/components/class-list'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { Select } from '@/components/select'
-import { TableList } from '@/components/table-list'
 import { ChangeEvent, useState } from 'react'
 
 export default function Home() {
@@ -63,23 +63,7 @@ export default function Home() {
             consultar
           </button>
         </form>
-        <div className="overflow-x-auto mb-10 ">
-          <div className="lg:hidden border-blue-950 border-b-4 py-4 rounded-sm  border-t-4">
-            <div className="flex items-center justify-between">
-              <p className="font-bold">periodo</p>
-              <p>1°</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="font-bold">nome da disciplina</p>
-              <p className="uppercase">química geral</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="font-bold">código da disciplina</p>
-              <p className="uppercase">dequo105</p>
-            </div>
-          </div>
-          <TableList />
-        </div>
+        <ClassList />
       </main>
       <Footer />
     </div>

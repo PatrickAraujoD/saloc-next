@@ -1,30 +1,43 @@
+'use client'
 import { Input } from '@/components/input'
-import { ChangeEvent, FormEvent, useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
+import { ChangeEvent, SyntheticEvent, useState } from 'react'
 
 export function LoginForm() {
-  const [emailValue, setEmailValue] = useState('')
-  const [passwordValue, setPasswordValue] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const router = useRouter()
 
   function handleVerifyCompletedEmailInput(
     event: ChangeEvent<HTMLInputElement>,
   ) {
-    event.target.setCustomValidity('')
-
-    const newValueEmail = event.target.value
-    setEmailValue(newValueEmail)
+    const newEmail = event.target.value
+    setEmail(newEmail)
   }
 
   function handleVerifyCompletedPasswordInput(
     event: ChangeEvent<HTMLInputElement>,
   ) {
-    event.target.setCustomValidity('')
-
-    const newPasswordValue = event.target.value
-    setPasswordValue(newPasswordValue)
+    const newPassword = event.target.value
+    setPassword(newPassword)
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SyntheticEvent) {
     event.preventDefault()
+
+    const result = await signIn('credentials', {
+      email,
+      password,
+      redirect: false,
+    })
+
+    if (result?.error) {
+      console.log(result)
+      return
+    }
+
+    return router.replace('/')
   }
 
   return (
@@ -41,7 +54,7 @@ export function LoginForm() {
           name="email"
           placeholder="digite seu email"
           onChange={handleVerifyCompletedEmailInput}
-          value={emailValue}
+          value={email}
           required
         />
 
@@ -52,7 +65,7 @@ export function LoginForm() {
           minLength={8}
           maxLength={15}
           onChange={handleVerifyCompletedPasswordInput}
-          value={passwordValue}
+          value={password}
           required
         />
         <button

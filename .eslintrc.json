@@ -2,5 +2,13 @@
   "extends" : [
     "@rocketseat/eslint-config/next",
     "next/core-web-vitals"
+  ],
+  "overrides": [
+    {
+      "files": ["next-auth.d.ts"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off"
+      }
+    }
   ]
 }

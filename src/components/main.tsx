@@ -42,18 +42,21 @@ export function Main() {
           <Select
             name="course"
             nameLabel="curso"
+            className="px-4"
             onChange={captureValueCourse}
             options={['--', 'ciência da computação', 'engenharia quimica']}
           />
           <Select
             name="period"
             nameLabel="periodo"
+            className="px-4"
             onChange={captureValuePeriod}
             options={['--', '2024.2', '2035.1']}
           />
           <Select
             name="teacher"
             nameLabel="docente"
+            className="px-4"
             options={[
               '--',
               'geraldo braz júnior',
@@ -63,6 +66,7 @@ export function Main() {
           <Select
             name="discipline"
             nameLabel="disciplina"
+            className="px-4"
             options={[
               '--',
               'estrutura de dados I',
@@ -73,6 +77,7 @@ export function Main() {
             isButtonDisabled={isButtonDisabled}
             name="consultar"
             type="submit"
+            title="consultar"
             className={`w-full bg-blue-950 h-10 text-white uppercase font-bold mt-4 rounded-md hover:bg-blue-950 hover:ease-in duration-200 ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           />
         </form>

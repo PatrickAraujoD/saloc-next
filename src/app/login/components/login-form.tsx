@@ -1,4 +1,5 @@
 'use client'
+import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -33,7 +34,6 @@ export function LoginForm() {
     })
 
     if (result?.error) {
-      console.log(result)
       return
     }
 
@@ -68,12 +68,7 @@ export function LoginForm() {
           value={password}
           required
         />
-        <button
-          type="submit"
-          className="bg-blue-950 w-full py-2 rounded-lg text-white font-bold uppercase"
-        >
-          entrar
-        </button>
+        <Button type="submit" title="entrar" isButtonDisabled={false} />
       </form>
     </main>
   )

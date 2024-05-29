@@ -1,12 +1,12 @@
 'use client'
 import { Button } from '@/components/button'
-import { ClassList } from '@/components/class-list'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { Select } from '@/components/select'
 import { signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { ChangeEvent, useState } from 'react'
+import { Table } from './table'
 
 export function Main() {
   const [nameCourse, setNameCourse] = useState('--')
@@ -81,7 +81,7 @@ export function Main() {
             className={`w-full bg-blue-950 h-10 text-white uppercase font-bold mt-4 rounded-md hover:bg-blue-950 hover:ease-in duration-200 ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           />
         </form>
-        <ClassList />
+        <Table />
       </main>
       <Footer />
     </div>

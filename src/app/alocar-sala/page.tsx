@@ -1,21 +1,19 @@
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
-import { Table } from '@/components/table'
+import { TableInfo } from './components/table-info'
+import { getServerSession } from 'next-auth'
+import { nextAuthConfig } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 
-export default function AlocarSala() {
+export default async function AlocarSala() {
+  const session = await getServerSession(nextAuthConfig)
+
+  if (!session) return redirect('/login')
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow py-10 px-2 xl:px-16">
-        <section>
-          <h2 className="uppercase font-semibold mb-4">turmas sem salas</h2>
-          <Table />
-        </section>
-        <section>
-          <h2 className="uppercase font-semibold mb-4">turmas com salas</h2>
-          <Table />
-        </section>
-      </main>
+      <TableInfo />
       <Footer />
     </div>
   )

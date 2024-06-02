@@ -1,7 +1,11 @@
 import { Td } from './components/td'
 import { Th } from './components/th'
 
-export function Table() {
+interface TableProps {
+  acao?: boolean
+}
+
+export function Table({ acao }: TableProps) {
   return (
     <div className="overflow-x-auto mb-10 ">
       <table className="hidden lg:table border-collapse">
@@ -16,6 +20,7 @@ export function Table() {
             <Th content="quantidade de alunos" />
             <Th content="docente" />
             <Th content="local" />
+            {acao && <Th content="ações" />}
           </tr>
         </thead>
         <tbody>
@@ -29,6 +34,16 @@ export function Table() {
             <Td content="60" />
             <Td content="CARLOS DE SALLES SOARES NETO" />
             <Td content="LAB 3 - B5 - CCET" />
+            {acao && (
+              <td className="border-2 border-black">
+                <a
+                  href="#"
+                  className="bg-blue-950 text-white font-bold uppercase w-full p-2 rounded-md border-transparent border-2 hover:border-blue-950 hover:bg-transparent transition-colors hover:text-blue-950"
+                >
+                  alocar
+                </a>
+              </td>
+            )}
           </tr>
         </tbody>
       </table>

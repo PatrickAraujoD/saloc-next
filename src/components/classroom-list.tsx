@@ -1,13 +1,13 @@
-import { Td } from './components/td'
-import { Th } from './components/th'
+import { Td } from './td'
+import { Th } from './th'
 
 interface TableProps {
   acao?: boolean
 }
 
-export function Table({ acao }: TableProps) {
+export function ClassroomList({ acao }: TableProps) {
   return (
-    <div className="overflow-x-auto mb-10 ">
+    <div className="overflow-x-auto mb-10">
       <table className="hidden lg:table border-collapse">
         <thead>
           <tr className="text-black text-center">

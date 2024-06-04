@@ -4,7 +4,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   nameLabel: string
   onChange?: (event: ChangeEvent<HTMLSelectElement>) => void
   options: string[]
-  className: string
+  className?: string
 }
 
 export function Select({
@@ -16,8 +16,11 @@ export function Select({
   ...select
 }: SelectProps) {
   return (
-    <div className="mt-4">
-      <label htmlFor={name} className="uppercase font-semibold">
+    <div className={`mt-4  ${className}`}>
+      <label
+        htmlFor={name}
+        className={`uppercase font-semibold ${className ? 'mr-2' : 'mr-0'}`}
+      >
         {nameLabel}:
       </label>
       <select
@@ -25,7 +28,7 @@ export function Select({
         id={name}
         onChange={onChange}
         {...select}
-        className={`border-2 border-black w-full h-10 rounded-md mt-2 ${className}`}
+        className={`border-2 border-black w-full h-10 rounded-md mt-2`}
       >
         {options.map((option) => {
           return (

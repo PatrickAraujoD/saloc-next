@@ -8,5 +8,6 @@ export default async function Login() {
   if (session) {
     return redirect('/')
   }
+
   return <LoginForm />
 }

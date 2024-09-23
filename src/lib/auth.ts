@@ -1,19 +1,7 @@
 import { api } from '@/services/api'
-import { ISODateString, NextAuthOptions } from 'next-auth'
+import { SessionProps } from '@/types'
+import { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-
-interface User {
-  email: string
-  id: number
-  isAdmin: boolean
-  name: string
-  sector: number
-}
-interface SessionProps {
-  token: string
-  user: User
-  expires: ISODateString
-}
 
 export const nextAuthConfig: NextAuthOptions = {
   providers: [
@@ -25,15 +13,17 @@ export const nextAuthConfig: NextAuthOptions = {
       },
 
       async authorize(credential) {
-        console.log('to aqui')
-        const response = await api.post('/login', {
+        const response = await api.post('/user/login', {
           email: credential?.email,
           password: credential?.password,
         })
 
+        if (response.status === 404) {
+          throw new Error('credenciais inválidas')
+        }
+
         if (response.status === 200) {
           const { data: user } = response
-          console.log(user)
           return user
         }
         return null

@@ -1,25 +1,69 @@
-import { ChangeEvent, SelectHTMLAttributes } from 'react'
+import { ChangeEvent, RefObject, SelectHTMLAttributes } from 'react'
 
-interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  nameLabel: string
-  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void
-  options: string[]
-  className?: string
+interface BaseOption {
+  id?: number | string
+  name?: string
+  period?: string
+  type?: string
+  number?: string
+  sector?: string
+  block?: string
+  schedule?: string
+  schedule_complet?: boolean
 }
 
-export function Select({
+interface SelectProps<T extends BaseOption>
+  extends SelectHTMLAttributes<HTMLSelectElement> {
+  nameLabel: string
+  onChange?: (event: ChangeEvent<HTMLSelectElement>) => void
+  options?: T[]
+  className?: string
+  selectRef?: RefObject<HTMLSelectElement>
+}
+
+export function Select<T extends BaseOption>({
   nameLabel,
-  options,
+  options = [],
   name,
   onChange,
   className,
+  selectRef,
   ...select
-}: SelectProps) {
+}: SelectProps<T>) {
+  const renderOptions = () => {
+    return (
+      <>
+        <option value={0}>--</option>
+        {Array.isArray(options) &&
+          options.map((option) => {
+            if (option.type === 'room') {
+              return (
+                <option key={option.id} value={option.id?.toString()}>
+                  {`${option.number} - ${option.sector} - ${option.sector === 'CCET' ? 'B' + option.block : option.block}`}
+                </option>
+              )
+            } else if (option.type === 'schedule') {
+              return (
+                <option key={option.schedule} value={option.schedule || ''}>
+                  {`${option.schedule_complet ? option.schedule + ' (horário completo)' : option.schedule}`}
+                </option>
+              )
+            }
+            return (
+              <option key={option.id} value={option.id?.toString()}>
+                {option.name ? option.name : option.period}
+              </option>
+            )
+          })}
+      </>
+    )
+  }
+
   return (
-    <div className={`mt-4  ${className}`}>
+    <div className={`mt-4 ${className}`}>
       <label
         htmlFor={name}
-        className={`uppercase font-semibold ${className ? 'mr-2' : 'mr-0'}`}
+        className={`uppercase text-start font-semibold ${className ? 'mr-2' : 'mr-0'}`}
       >
         {nameLabel}:
       </label>
@@ -27,16 +71,11 @@ export function Select({
         name={name}
         id={name}
         onChange={onChange}
+        ref={selectRef}
         {...select}
-        className={`border-2 border-black w-full h-10 rounded-md mt-2`}
+        className="border-2 border-black w-full h-10 rounded-md mt-2"
       >
-        {options.map((option) => {
-          return (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          )
-        })}
+        {renderOptions()}
       </select>
     </div>
   )

@@ -11,7 +11,6 @@ export function Input({ nameLabel, name, ...input }: InputProps) {
         {nameLabel}
       </label>
       <input
-        type={name}
         name={name}
         id={name}
         className="w-full bg-transparent border-2 border-blue-950 pl-2 py-2 rounded-md placeholder:capitalize"

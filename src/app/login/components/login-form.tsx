@@ -8,24 +8,19 @@ import { ChangeEvent, SyntheticEvent, useState } from 'react'
 export function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  function handleVerifyCompletedEmailInput(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
-    const newEmail = event.target.value
-    setEmail(newEmail)
-  }
-
-  function handleVerifyCompletedPasswordInput(
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
-    const newPassword = event.target.value
-    setPassword(newPassword)
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    const { name, value } = event.target
+    if (name === 'email') setEmail(value)
+    if (name === 'password') setPassword(value)
   }
 
   async function handleSubmit(event: SyntheticEvent) {
     event.preventDefault()
+    setIsLoading(true)
 
     const result = await signIn('credentials', {
       email,
@@ -33,11 +28,15 @@ export function LoginForm() {
       redirect: false,
     })
 
+    setIsLoading(false)
+
     if (result?.error) {
+      setError('Credencias inválidas.')
       return
     }
 
-    return router.replace('/')
+    router.replace('/')
+    window.location.reload()
   }
 
   return (
@@ -47,28 +46,39 @@ export function LoginForm() {
         className="flex flex-col items-center justify-center p-6 sm:p-10 rounded-xl border-2 border-blue-950"
       >
         <h1 className="text-blue-950 uppercase font-bold text-2xl mb-4">
-          login
+          Login
         </h1>
+
+        {error && <div className="text-red-500 mb-4">{error}</div>}
+
         <Input
-          nameLabel="email"
+          nameLabel="Email"
           name="email"
-          placeholder="digite seu email"
-          onChange={handleVerifyCompletedEmailInput}
+          type="email"
+          placeholder="Digite seu email"
+          onChange={handleChange}
           value={email}
           required
         />
 
         <Input
-          nameLabel="senha"
+          nameLabel="Senha"
           name="password"
-          placeholder="digite sua senha"
+          type="password"
+          placeholder="Digite sua senha"
           minLength={8}
           maxLength={15}
-          onChange={handleVerifyCompletedPasswordInput}
+          onChange={handleChange}
           value={password}
           required
         />
-        <Button type="submit" title="entrar" isButtonDisabled={false} />
+
+        <Button
+          type="submit"
+          title="Entrar"
+          isButtonDisabled={isLoading}
+          isLoading={isLoading}
+        />
       </form>
     </main>
   )

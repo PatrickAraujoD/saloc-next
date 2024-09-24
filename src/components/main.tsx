@@ -1,8 +1,6 @@
 'use client'
 import { Button } from '@/components/button'
 import { Select } from '@/components/select'
-import { signOut } from 'next-auth/react'
-import { redirect, useRouter } from 'next/navigation'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { ClassroomList } from './classroom-list'
 import {
@@ -14,6 +12,7 @@ import {
 import { api } from '@/services/api'
 import { SessionProps } from '@/types/index'
 import usePdfGenerator from '@/hooks/use-pdf-generator'
+import Menu from '@/app/home/components/menu'
 
 interface Course {
   id: number
@@ -45,17 +44,7 @@ export function Main({ session }: MainProps) {
   const [listTeachers, setListTeachers] = useState([])
   const [listDisciplines, setListDisciplines] = useState([])
   const [listclass, setListClass] = useState([])
-  const router = useRouter()
   const token = session?.token
-
-  async function logout() {
-    await signOut({
-      redirect: false,
-    })
-
-    router.replace('/')
-    location.reload()
-  }
 
   function captureValueCourse(event: ChangeEvent<HTMLSelectElement>) {
     const courseId = Number(event.target.value)
@@ -195,30 +184,6 @@ export function Main({ session }: MainProps) {
     setIsLoadingButtonSigaa(false)
   }
 
-  function redirectLogin() {
-    router.push('/login')
-  }
-
-  function redirecAllocateRoom() {
-    if (session?.user.course) {
-      const course = session.user.course.id
-
-      console.log('dsdjskjdksjdk')
-      router.push(`/listar-turmas?curso=${course}&periodo=${period}`)
-      return
-    }
-
-    router.push(`/listar-turmas?curso=${valueCourse}&periodo=${period}`)
-  }
-
-  function redirecCheckRooms() {
-    router.push(`/verificar-salas`)
-  }
-
-  function redirecMapOfRooms() {
-    router.push(`/mapa-salas`)
-  }
-
   useEffect(() => {
     fetchInitialData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -249,89 +214,14 @@ export function Main({ session }: MainProps) {
           />
         </div>
       )}
-      <div className={`flex items-center mt-10 gap-4`}>
-        <Button
-          isButtonDisabled={isButtonDisabled}
-          title="RELATÓRIO"
-          type="button"
-          className="sm:h-16 xl:h-12"
-          onClick={() => {
-            if (session?.user.course) {
-              generatePdfReport('course', session?.user.course.name)
-            } else {
-              generatePdfReport('course')
-            }
-          }}
-        />
-        {session && session.user.sector && (
-          <>
-            <Button
-              isButtonDisabled={isButtonDisabled}
-              title="alocar turmas"
-              type="button"
-              onClick={redirecAllocateRoom}
-              className="sm:h-16 xl:h-12 px-2"
-            />
-            <Button
-              isButtonDisabled={false}
-              title="mapa de sala"
-              type="button"
-              onClick={redirecMapOfRooms}
-              className="sm:h-16 xl:h-12"
-            />
-            <Button
-              isButtonDisabled={false}
-              title="verificar salas"
-              type="button"
-              onClick={redirecCheckRooms}
-              className="sm:h-16 xl:h-12 px-2"
-            />
-          </>
-        )}
-        {session && (
-          <Button
-            isButtonDisabled={false}
-            title="sair"
-            type="button"
-            onClick={logout}
-            className="sm:h-16 xl:h-12"
-          />
-        )}
-        {session && session.user.isAdmin && (
-          <>
-            <Button
-              isButtonDisabled={false}
-              title="adicionar usuário"
-              type="button"
-              onClick={() => router.push(`/register`)}
-              className="sm:h-16 xl:h-12"
-            />
-            <Button
-              isButtonDisabled={false}
-              title="adicionar curso"
-              type="button"
-              onClick={() => router.push(`/registrar-curso`)}
-              className="sm:h-16 xl:h-12 px-2"
-            />
-            <Button
-              isButtonDisabled={false}
-              title="adicionar setor"
-              type="button"
-              onClick={() => router.push(`/registrar-setor`)}
-              className="sm:h-16 xl:h-12 px-2"
-            />
-          </>
-        )}
-        {!session && (
-          <Button
-            isButtonDisabled={false}
-            title="login"
-            type="button"
-            onClick={redirectLogin}
-            className="sm:h-16 xl:h-12"
-          />
-        )}
-      </div>
+      <Menu
+        generatePdfReport={generatePdfReport}
+        isButtonDisabled={isButtonDisabled}
+        period={period}
+        session={session}
+        valueCourse={valueCourse}
+      />
+
       <form className="mb-10" onSubmit={handleSubmit}>
         <Select
           name="period"

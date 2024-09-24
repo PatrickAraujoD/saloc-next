@@ -40,7 +40,7 @@ export function LoginForm() {
   }
 
   return (
-    <main className="flex-grow flex items-center justify-center">
+    <main className="flex-grow flex items-center justify-center p-4">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col items-center justify-center p-6 sm:p-10 rounded-xl border-2 border-blue-950"

@@ -11,7 +11,7 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'Create App Saloc',
+  title: 'SALOC',
   description: 'Criação de uma aplicação para facilitar alocação de sala',
 }
 

@@ -43,9 +43,7 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
       onRoomAdded(newRoom)
       setIsError(false)
     } catch (error) {
-      console.log(error)
       if (axios.isAxiosError(error)) {
-        console.log(error)
         const errorMessage = error.response?.data || 'Erro desconhecido'
         setMessage(errorMessage)
         setIsError(true)

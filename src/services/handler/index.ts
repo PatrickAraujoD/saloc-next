@@ -11,7 +11,6 @@ export default async function handler(
     const token = session?.token
     res.status(200).json({ token })
   } catch (error) {
-    console.log(error)
     res.status(500).json({ error: 'Failed to get token' })
   }
 }

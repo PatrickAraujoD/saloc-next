@@ -47,7 +47,6 @@ export function RegisterForm({ session }: RegisterFormProps) {
 
     try {
       const response = await createUser(token, body)
-      console.log(response.message)
 
       setMessage(response.message)
       setIsError(false)

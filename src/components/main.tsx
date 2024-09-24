@@ -83,14 +83,11 @@ export function Main({ session }: MainProps) {
   }
 
   async function fetchDiscipline(id: number) {
-    console.log(token)
     try {
       const disciplines = await listDiscipline(id)
-      console.log(disciplines)
       setListDisciplines(disciplines)
       setIsError(false)
     } catch (error) {
-      console.log(error)
       setMessage('servidor offline')
       setIsError(true)
     }
@@ -111,7 +108,6 @@ export function Main({ session }: MainProps) {
       setListPeriods(periods)
       setIsError(false)
     } catch (error) {
-      console.log(error)
       setMessage('servidor offline')
       setIsError(true)
     }

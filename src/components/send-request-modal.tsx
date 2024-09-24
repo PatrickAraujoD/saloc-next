@@ -32,8 +32,6 @@ export function SendRequestModal({
   const [destination, setDestination] = useState(0)
   const token = session?.token
 
-  console.log(schedules)
-
   async function handleSearchSchedules() {
     try {
       const response = await api.post(

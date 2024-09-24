@@ -67,8 +67,6 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
     setIsLoading(true)
     e.preventDefault()
 
-    console.log(schedule)
-
     const classData = {
       teachers: selectedProfessores,
       classNumber,
@@ -82,8 +80,6 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
       const response = await api.post('/classe/register', classData, {
         headers: { Authorization: 'Bearer ' + token },
       })
-
-      console.log(response.data)
 
       setMessage(response.data.message)
       setIsError(false)

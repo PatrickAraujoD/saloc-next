@@ -23,8 +23,6 @@ export async function getRooms(
       })
     }
 
-    console.log(response.data)
-
     const rooms = response.data.map((room: Room) => ({
       ...room,
       type: 'room',

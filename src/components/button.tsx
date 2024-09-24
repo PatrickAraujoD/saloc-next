@@ -6,6 +6,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   title?: string
   isLoading?: boolean
   children?: React.ReactNode
+  colorTextBlack?: boolean
 }
 
 export function Button({
@@ -15,13 +16,14 @@ export function Button({
   className,
   isLoading,
   children,
+  colorTextBlack,
   ...buttonProps
 }: ButtonProps) {
   return (
     <button
       type={type}
       disabled={isButtonDisabled}
-      className={` font-bold uppercase w-40 h-10 rounded-md border-2 hover:border-blue-950 hover:bg-transparent transition-colors hover:text-blue-950  ${isLoading ? 'border-blue-950 text-blue-950 bg-white' : 'bg-blue-950 text-white border-transparent'} ${className}`}
+      className={`font-bold uppercase w-40 h-10 rounded-md ${colorTextBlack ? 'mb-2' : 'hover:border-blue-950 hover:text-blue-950 border-2'} hover:bg-transparent transition-colors   ${isLoading ? 'border-blue-950 text-blue-950 bg-white' : `bg-blue-950 text-white border-transparent`} ${className}`}
       {...buttonProps}
     >
       {isLoading ? (

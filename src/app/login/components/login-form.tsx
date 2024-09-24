@@ -35,7 +35,7 @@ export function LoginForm() {
       return
     }
 
-    router.replace('/')
+    router.replace('/home')
     window.location.reload()
   }
 

@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation'
 export default async function ListarTurmas() {
   const session = await getServerSession(nextAuthConfig)
 
-  if (!session) return redirect('/')
+  if (!session) return redirect('/home')
 
   return <TableInfo session={session} />
 }

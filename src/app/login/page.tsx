@@ -6,7 +6,7 @@ import { nextAuthConfig } from '@/lib/auth'
 export default async function Login() {
   const session = await getServerSession(nextAuthConfig)
   if (session) {
-    return redirect('/')
+    return redirect('/home')
   }
 
   return <LoginForm />

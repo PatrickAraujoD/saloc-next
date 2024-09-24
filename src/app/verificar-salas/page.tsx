@@ -7,7 +7,7 @@ export default async function VerifyRooms() {
   const session = await getServerSession(nextAuthConfig)
 
   if (!session) {
-    return redirect('/')
+    return redirect('/home')
   }
 
   return (

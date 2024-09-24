@@ -6,9 +6,9 @@ import { RegisterForm } from './components/register-form'
 export default async function Register() {
   const session = await getServerSession(nextAuthConfig)
 
-  if (!session) return redirect('/')
+  if (!session) return redirect('/home')
 
-  if (session && !session.user.isAdmin) redirect('/')
+  if (session && !session.user.isAdmin) redirect('/home')
 
   return <RegisterForm session={session} />
 }

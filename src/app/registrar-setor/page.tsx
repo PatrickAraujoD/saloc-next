@@ -6,9 +6,9 @@ import { redirect } from 'next/navigation'
 export default async function registerCourse() {
   const session = await getServerSession(nextAuthConfig)
 
-  if (!session) return redirect('/')
+  if (!session) return redirect('/home')
 
-  if (session && !session.user.isAdmin) redirect('/')
+  if (session && !session.user.isAdmin) redirect('/home')
 
   return <RegisterCourseForm session={session} />
 }

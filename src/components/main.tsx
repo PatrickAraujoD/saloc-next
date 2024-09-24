@@ -221,13 +221,14 @@ export function Main({ session }: MainProps) {
 
   useEffect(() => {
     fetchInitialData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     if (valueCourse) {
       fetchDiscipline(valueCourse)
     }
-
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valueCourse])
 
   const isButtonDisabled = valueCourse === 0 || period === 0 || isLoading

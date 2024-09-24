@@ -72,6 +72,7 @@ export function FormMapRoom({
   useEffect(() => {
     fetchRooms()
     fetchPeriods()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

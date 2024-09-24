@@ -162,6 +162,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
       fecthSchedule(Number(idClass))
       fecthClass(Number(idClass), String(scheduleRequest))
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idClass, valueDelete])
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -169,6 +170,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
     if (classInfo && classInfo.period?.id) {
       fecthRoomAllocate()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classInfo])
 
   const isButtonDisable = valueRoom === 0 || schedule === ''

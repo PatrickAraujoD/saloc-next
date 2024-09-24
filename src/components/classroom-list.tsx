@@ -39,16 +39,16 @@ interface TableProps {
 }
 
 const headersTableKeys = [
-  "periodo",
-  "codigo",
-  "nomeDisciplina",
-  "departamento",
-  "numeroTurma",
-  "horario",
-  "quantidadeAlunos",
-  "docente",
-  "local",
-  "acao",
+  'periodo',
+  'codigo',
+  'nomeDisciplina',
+  'departamento',
+  'numeroTurma',
+  'horario',
+  'quantidadeAlunos',
+  'docente',
+  'local',
+  'acao',
 ]
 
 export function ClassroomList({
@@ -318,17 +318,17 @@ export function ClassroomList({
             </tr>
           </thead>
           <tbody>
-              <tr className="text-black text-center p-10">
-                {headersTableKeys.map((key, index) => {
-                  return (
-                    <td className='border-2 border-black w-56'>
-                      <div className="flex items-center justify-center h-full">
-                        <div className="skeleton w-20 h-4" />
-                      </div>
-                    </td>
-                  )
-                })}
-              </tr>
+            <tr className="text-black text-center p-10">
+              {headersTableKeys.map((key) => {
+                return (
+                  <td key={key} className="border-2 border-black w-56">
+                    <div className="flex items-center justify-center h-full">
+                      <div className="skeleton w-20 h-4" />
+                    </div>
+                  </td>
+                )
+              })}
+            </tr>
           </tbody>
         </table>
       )}

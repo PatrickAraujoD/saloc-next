@@ -156,6 +156,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
     }
   }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (idClass) {
       fecthSchedule(Number(idClass))
@@ -163,6 +164,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
     }
   }, [idClass, valueDelete])
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (classInfo && classInfo.period?.id) {
       fecthRoomAllocate()

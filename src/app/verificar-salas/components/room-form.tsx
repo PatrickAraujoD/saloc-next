@@ -93,7 +93,7 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
         </div>
       )}
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-2 gap-x-36 mt-10">
+        <div className="flex flex-col md:grid md:grid-cols-2 md:gap-x-36 mt-10">
           <Input
             nameLabel={'numero da sala *'}
             name={'numberOfRoom'}
@@ -123,7 +123,7 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
           isButtonDisabled={isButtonDisabled}
           title="salvar"
           type={'submit'}
-          className={`${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'} w-80`}
+          className={`${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'} w-full md:w-80`}
           isLoading={isLoading}
         />
       </form>

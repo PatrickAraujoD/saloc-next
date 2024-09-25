@@ -11,5 +11,6 @@ declare module 'next-auth' {
       sector: Sector
       course: Course
     }
+    exp: number
   }
 }

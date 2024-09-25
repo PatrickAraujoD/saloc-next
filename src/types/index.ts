@@ -84,4 +84,5 @@ export interface SessionProps {
   token: string
   user: UserSession
   expires: ISODateString
+  exp: number
 }

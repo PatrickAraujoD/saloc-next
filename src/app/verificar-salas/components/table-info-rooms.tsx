@@ -9,6 +9,7 @@ import { ConfirmationModal } from '@/components/confirmation-modal'
 import { Room, SessionProps } from '@/types'
 import axios from 'axios'
 import { RoomForm } from './room-form'
+import { MdDeleteForever } from 'react-icons/md'
 
 interface TableInfoRoomsProps {
   session: SessionProps
@@ -106,7 +107,7 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
       )}
       <RoomForm session={session} onRoomAdded={handleRoomAdded} />
       {isLoading ? (
-        <table className="mt-4 hidden md:table border-collapse">
+        <table className="mt-4 table-zebra-zebra md:table border-collapse">
           <thead>
             <tr className="text-black text-center">
               {headerTableProps.map((header) => (
@@ -131,36 +132,39 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
           <p>Nenhuma sala encontrada.</p>
         </div>
       ) : (
-        <table className="mt-4 hidden md:table border-collapse">
-          <thead>
-            <tr className="text-black text-center">
-              {headerTableProps.map((header) => (
-                <Th key={header} content={header} />
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {roomsList?.map((room) => (
-              <tr key={room.id} className="text-black text-center">
-                <Td content={room.number} />
-                <Td content={room.sector} />
-                <Td content={room.capacity ? String(room.capacity) : ''} />
-                <Td content={room.block} />
-                <Td content={room.floor} />
-                <td className="border-black border-2">
-                  <Button
-                    isButtonDisabled={false}
-                    type="button"
-                    name="delete"
-                    title="Excluir"
-                    className="bg-red-700 hover:text-red-700 hover:border-red-700"
-                    onClick={() => openModal(room)}
-                  />
-                </td>
+        <div className="overflow-auto">
+          <table className="mt-4 table-zebra-zebra table border-collapse">
+            <thead>
+              <tr className="text-black text-center">
+                {headerTableProps.map((header) => (
+                  <Th key={header} content={header} />
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {roomsList?.map((room) => (
+                <tr key={room.id} className="text-black text-center">
+                  <Td content={room.number} />
+                  <Td content={room.sector} />
+                  <Td content={room.capacity ? String(room.capacity) : ''} />
+                  <Td content={room.block} />
+                  <Td content={room.floor} />
+                  <td className="border-black border-2">
+                    <Button
+                      isButtonDisabled={false}
+                      type="button"
+                      name="delete"
+                      className="bg-red-700 hover:text-red-700 hover:border-red-700 w-full"
+                      onClick={() => openModal(room)}
+                    >
+                      <MdDeleteForever size={24} className="m-auto" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
 
       <ConfirmationModal

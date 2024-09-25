@@ -55,6 +55,7 @@ export function TableInfo({ session }: TableInfo) {
       <section>
         <h2 className="uppercase font-semibold mb-4">turmas sem salas</h2>
         <ClassroomList
+          loadingTable={true}
           action={true}
           classList={list.without_rooms}
           session={session}
@@ -63,6 +64,7 @@ export function TableInfo({ session }: TableInfo) {
       <section>
         <h2 className="uppercase font-semibold mb-4">turmas com salas</h2>
         <ClassroomList
+          loadingTable={true}
           action={true}
           classList={list.with_rooms}
           session={session}

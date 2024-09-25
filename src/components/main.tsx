@@ -250,6 +250,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
         classList={listclass}
         tableRef={tableRef}
         session={session}
+        loadingTable={false}
       />
     </main>
   )

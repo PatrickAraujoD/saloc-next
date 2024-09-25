@@ -42,11 +42,17 @@ export function Header() {
       <div className="flex gap-1 flex-col items-center justify-center -mt-4">
         <h2 className="uppercase text-2xl md:text-4xl font-bold">ccet</h2>
         <div className="flex gap-2 items-center justify-center">
-          <button onClick={handleBack} className="flex items-center justify-center bg-white w-6 h-6 md:w-8 md:h-8 rounded-md hover:bg-blue-950 text-blue-950 hover:text-white border-2 border-transparent hover:border-white transition duration-300 ease-in-out">
+          <button
+            onClick={handleBack}
+            className="flex items-center justify-center bg-white w-6 h-6 md:w-8 md:h-8 rounded-md hover:bg-blue-950 text-blue-950 hover:text-white border-2 border-transparent hover:border-white transition duration-300 ease-in-out"
+          >
             <GrFormPreviousLink size={20} />
           </button>
 
-          <Link href="/home" className="flex items-center justify-center bg-white w-6 h-6 md:w-8 md:h-8 rounded-md hover:bg-blue-950 text-blue-950 hover:text-white border-2 border-transparent hover:border-white transition duration-300 ease-in-out">
+          <Link
+            href="/home"
+            className="flex items-center justify-center bg-white w-6 h-6 md:w-8 md:h-8 rounded-md hover:bg-blue-950 text-blue-950 hover:text-white border-2 border-transparent hover:border-white transition duration-300 ease-in-out"
+          >
             <FaHome size={20} />
           </Link>
         </div>

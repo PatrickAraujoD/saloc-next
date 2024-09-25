@@ -14,20 +14,33 @@ interface TableInfoRoomsProps {
   session: SessionProps
 }
 
+const headerTableProps = [
+  'Sala',
+  'Setor',
+  'Capacidade',
+  'Bloco',
+  'Piso',
+  'Ações',
+]
+
 export function TableInfoRooms({ session }: TableInfoRoomsProps) {
   const [roomsList, setRoomsList] = useState<Room[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [roomToDelete, setRoomToDelete] = useState<Room | null>(null)
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const token = session.token
 
   async function fetchGetRooms() {
     try {
+      setIsLoading(true)
       const rooms = await getRooms(token)
       setRoomsList(rooms)
     } catch (error) {
       console.error('Erro ao buscar salas:', error)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -91,47 +104,63 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
           />
         </div>
       )}
-      {roomsList?.length === 0 ? (
-        <h2 className="mt-10 text-center font-bold uppercase text-lg ">
-          nenhuma sala encontrada!
-        </h2>
-      ) : (
-        <div>
-          <RoomForm session={session} onRoomAdded={handleRoomAdded} />
-          <table className="mt-4 hidden lg:table border-collapse">
-            <thead>
-              <tr className="text-black text-center">
-                <Th content="Sala" />
-                <Th content="Setor" />
-                <Th content="Capacidade" />
-                <Th content="Bloco" />
-                <Th content="Piso" />
-                <Th content="Ações" />
-              </tr>
-            </thead>
-            <tbody>
-              {roomsList?.map((room) => (
-                <tr className="text-black text-center" key={room.id}>
-                  <Td content={room.number} />
-                  <Td content={room.sector} />
-                  <Td content={room.capacity ? String(room.capacity) : ''} />
-                  <Td content={room.block} />
-                  <Td content={room.floor} />
-                  <td className="border-black border-2">
-                    <Button
-                      isButtonDisabled={false}
-                      type="button"
-                      name="delete"
-                      title="Excluir"
-                      className="bg-red-700 hover:text-red-700 hover:border-red-700"
-                      onClick={() => openModal(room)}
-                    />
-                  </td>
-                </tr>
+      <RoomForm session={session} onRoomAdded={handleRoomAdded} />
+      {isLoading ? (
+        <table className="mt-4 hidden md:table border-collapse">
+          <thead>
+            <tr className="text-black text-center">
+              {headerTableProps.map((header) => (
+                <Th key={header} content={header} />
               ))}
-            </tbody>
-          </table>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {headerTableProps.map((key) => (
+                <td key={key} className="border-2 border-black">
+                  <div className="w-full flex items-center justify-center">
+                    <p className="skeleton md:w-12 lg:w-20 h-4" />
+                  </div>
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
+      ) : roomsList?.length === 0 ? (
+        <div className="mt-4 text-center text-black">
+          <p>Nenhuma sala encontrada.</p>
         </div>
+      ) : (
+        <table className="mt-4 hidden md:table border-collapse">
+          <thead>
+            <tr className="text-black text-center">
+              {headerTableProps.map((header) => (
+                <Th key={header} content={header} />
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {roomsList?.map((room) => (
+              <tr key={room.id} className="text-black text-center">
+                <Td content={room.number} />
+                <Td content={room.sector} />
+                <Td content={room.capacity ? String(room.capacity) : ''} />
+                <Td content={room.block} />
+                <Td content={room.floor} />
+                <td className="border-black border-2">
+                  <Button
+                    isButtonDisabled={false}
+                    type="button"
+                    name="delete"
+                    title="Excluir"
+                    className="bg-red-700 hover:text-red-700 hover:border-red-700"
+                    onClick={() => openModal(room)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
 
       <ConfirmationModal

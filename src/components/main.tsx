@@ -10,7 +10,7 @@ import {
   listPeriod,
 } from '@/services/http'
 import { api } from '@/services/api'
-import { SessionProps } from '@/types/index'
+import { SessionProps, Teacher } from '@/types/index'
 import usePdfGenerator from '@/hooks/use-pdf-generator'
 import Menu from '@/app/home/components/menu'
 
@@ -26,9 +26,12 @@ interface Period {
 
 interface MainProps {
   session: SessionProps | null
+  periods: Period[]
+  courses?: Course[]
+  teachers?: Teacher[]
 }
 
-export function Main({ session }: MainProps) {
+export function Main({ session, periods, courses, teachers }: MainProps) {
   const { tableRef, generatePdfReport, selectCourseRef, selectSemesterRef } =
     usePdfGenerator()
   const [valueCourse, setValueCourse] = useState<number | null>(null)
@@ -37,11 +40,8 @@ export function Main({ session }: MainProps) {
   const [disciplineId, setDisciplineId] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingButtonSigaa, setIsLoadingButtonSigaa] = useState(false)
-  const [listCourses, setListCourses] = useState<Course[]>([])
-  const [listPeriods, setListPeriods] = useState<Period[]>([])
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
-  const [listTeachers, setListTeachers] = useState([])
   const [listDisciplines, setListDisciplines] = useState([])
   const [listclass, setListClass] = useState([])
   const token = session?.token
@@ -86,26 +86,6 @@ export function Main({ session }: MainProps) {
     try {
       const disciplines = await listDiscipline(id)
       setListDisciplines(disciplines)
-      setIsError(false)
-    } catch (error) {
-      setMessage('servidor offline')
-      setIsError(true)
-    }
-  }
-
-  async function fetchInitialData() {
-    const periods = await listPeriod()
-    try {
-      if (!session || !session.user.sector?.course) {
-        const [newCourses, teachers] = await Promise.all([
-          getCourses(),
-          listTeacher(),
-        ])
-
-        setListCourses(newCourses)
-        setListTeachers(teachers)
-      }
-      setListPeriods(periods)
       setIsError(false)
     } catch (error) {
       setMessage('servidor offline')
@@ -181,11 +161,6 @@ export function Main({ session }: MainProps) {
   }
 
   useEffect(() => {
-    fetchInitialData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
     if (valueCourse) {
       fetchDiscipline(valueCourse)
     }
@@ -223,7 +198,7 @@ export function Main({ session }: MainProps) {
           name="period"
           nameLabel="periodo"
           onChange={captureValuePeriod}
-          options={listPeriods}
+          options={periods}
           selectRef={selectSemesterRef}
         />
         {(!session || !session.user.sector || !session.user.sector.course) && (
@@ -232,13 +207,13 @@ export function Main({ session }: MainProps) {
               name="course"
               nameLabel="curso"
               onChange={captureValueCourse}
-              options={listCourses}
+              options={courses}
               selectRef={selectCourseRef}
             />
             <Select
               name="teacher"
               nameLabel="docente"
-              options={listTeachers}
+              options={teachers}
               onChange={captureValueTeacherId}
             />
             <Select
@@ -257,7 +232,7 @@ export function Main({ session }: MainProps) {
             type="submit"
             title="consultar"
             isLoading={isLoading}
-            className={`bg-blue-950 lg:h-16 xl:h-12 w-48 text-white uppercase font-bold rounded-md hover:bg-blue-950 hover:ease-in duration-200 ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+            className={`h-14 xl:h-12 w-48 uppercase ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           />
           {session && session.user.sector?.course && (
             <Button
@@ -266,7 +241,7 @@ export function Main({ session }: MainProps) {
               type="button"
               isLoading={isLoadingButtonSigaa}
               onClick={importDataSigaa}
-              className="lg:h-16 xl:h-12 w-48"
+              className="h-14 xl:h-12 w-48"
             />
           )}
         </div>

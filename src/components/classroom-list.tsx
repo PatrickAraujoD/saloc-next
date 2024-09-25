@@ -192,7 +192,10 @@ export function ClassroomList({
       )}
       {classes.length > 0 ? (
         <div className="overflow-auto">
-          <table className="table border-collapse" ref={tableRef}>
+          <table
+            className="table-zebra-zebra table border-collapse"
+            ref={tableRef}
+          >
             <thead>
               <tr className="text-black text-center">
                 {headersTableKeys.map((key) => {

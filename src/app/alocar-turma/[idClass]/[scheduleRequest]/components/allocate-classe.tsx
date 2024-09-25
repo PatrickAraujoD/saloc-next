@@ -69,13 +69,13 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
   async function handleCaptureSchedule(event: ChangeEvent<HTMLSelectElement>) {
     const schedule = event.target.value
     const idPeriod = classInfo?.period.id
+    setSchedule(schedule)
     if (idPeriod && schedule !== '0') {
       const response = await getRooms(token, idPeriod, schedule)
       setListRooms(response)
     } else {
       setListRooms([])
     }
-    setSchedule(schedule)
   }
 
   async function handleCaptureValueRoom(event: ChangeEvent<HTMLSelectElement>) {

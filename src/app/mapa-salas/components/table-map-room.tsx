@@ -96,48 +96,49 @@ export function TableMapRoom({ data, tableRef }: TableMapRoomProps) {
           </div>
         </section>
       )}
+      <div className="overflow-auto">
+        <table className="table-zebra-zebra table mt-10" ref={tableRef}>
+          <thead>
+            <tr className="text-center text-black">
+              <Th content="HORÁRIO" />
+              <Th content="SEGUNDO" />
+              <Th content="TERÇA" />
+              <Th content="QUARTA" />
+              <Th content="QUINTA" />
+              <Th content="SEXTA" />
+              <Th content="SÁBADO" />
+            </tr>
+          </thead>
+          <tbody id="tabelas-disciplinas">
+            {horarios.map((horario, index) => {
+              const [startHour, startMinute, endHour, endMinute, turno, slot] =
+                horario
+              const timeRange = `${startHour}:${startMinute < 10 ? `0${startMinute}` : startMinute} ${endHour}:${endMinute < 10 ? `0${endMinute}` : endMinute}`
 
-      <table className="table mt-10" ref={tableRef}>
-        <thead>
-          <tr className="text-center text-black">
-            <Th content="HORÁRIO" />
-            <Th content="SEGUNDO" />
-            <Th content="TERÇA" />
-            <Th content="QUARTA" />
-            <Th content="QUINTA" />
-            <Th content="SEXTA" />
-            <Th content="SÁBADO" />
-          </tr>
-        </thead>
-        <tbody id="tabelas-disciplinas">
-          {horarios.map((horario, index) => {
-            const [startHour, startMinute, endHour, endMinute, turno, slot] =
-              horario
-            const timeRange = `${startHour}:${startMinute < 10 ? `0${startMinute}` : startMinute} ${endHour}:${endMinute < 10 ? `0${endMinute}` : endMinute}`
+              return (
+                <tr key={index}>
+                  <Td content={timeRange} />
+                  {dias.map((dia, diaIndex) => {
+                    const disciplinaEncontrada = findDiscipline(
+                      data,
+                      dia,
+                      slot,
+                      turno,
+                    )
 
-            return (
-              <tr key={index}>
-                <Td content={timeRange} />
-                {dias.map((dia, diaIndex) => {
-                  const disciplinaEncontrada = findDiscipline(
-                    data,
-                    dia,
-                    slot,
-                    turno,
-                  )
-
-                  return (
-                    <Td
-                      key={diaIndex}
-                      content={`${disciplinaEncontrada || ''}`}
-                    />
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+                    return (
+                      <Td
+                        key={diaIndex}
+                        content={`${disciplinaEncontrada || ''}`}
+                      />
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

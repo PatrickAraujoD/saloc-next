@@ -13,7 +13,7 @@ export function ClassInfoTableAllocate({
   openModal,
 }: ClassInfoTableProps) {
   return (
-    <div className="mt-20 w-full">
+    <div className="mt-20 w-full overflow-auto">
       {classInfoTable.length > 0 && (
         <table className="w-full text-center uppercase font-semibold">
           <thead>

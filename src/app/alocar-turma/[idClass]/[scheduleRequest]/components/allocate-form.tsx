@@ -27,11 +27,11 @@ export function AllocateForm({
   return (
     <section>
       <form onSubmit={onSubmit}>
-        <div className="flex">
+        <div className="flex flex-col w-full md:flex-row md:gap-x-20">
           <Select
             nameLabel="horario"
             options={listSchedule}
-            className="flex justify-center items-center w-2/4 mr-96"
+            className="flex flex-col justify-center w-full items-start lg:flex-row lg:items-center"
             name="horario"
             onChange={onScheduleChange}
             value={schedule}
@@ -39,7 +39,7 @@ export function AllocateForm({
           <Select
             nameLabel="sala"
             options={listRooms}
-            className="flex items-center justify-center w-2/4"
+            className="flex flex-col justify-center w-full items-start lg:flex-row lg:items-center"
             name="sala"
             onChange={onRoomChange}
             value={valueRoom}
@@ -49,7 +49,7 @@ export function AllocateForm({
           isButtonDisabled={isButtonDisabled}
           title="alocar"
           type="submit"
-          className={`w-28 absolute mt-2 flex items-center justify-center right-10 ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+          className={`w-full md:w-28 md:absolute mt-2 flex items-center justify-center right-10 ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         />
       </form>
     </section>

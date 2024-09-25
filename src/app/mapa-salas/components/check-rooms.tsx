@@ -27,7 +27,7 @@ export function CheckRooms({ session }: CheckRoomsProps) {
   }
 
   return (
-    <main className="flex-grow p-10">
+    <main className="flex-grow p-6 md:p-20">
       <section>
         <h1 className="uppercase font-extrabold">Mapa de Sala</h1>
         <Button

@@ -132,7 +132,7 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
           <p>Nenhuma sala encontrada.</p>
         </div>
       ) : (
-        <div className="overflow-auto">
+        <div className="overflow-x-auto">
           <table className="mt-4 table-zebra-zebra table border-collapse">
             <thead>
               <tr className="text-black text-center">

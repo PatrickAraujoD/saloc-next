@@ -176,7 +176,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
   const isButtonDisable = valueRoom === 0 || schedule === ''
 
   return (
-    <main className="flex-grow p-10">
+    <main className="flex-grow p-6 md:p-10">
       <section>
         <h2 className="font-bold uppercase mb-2">informações</h2>
         <ClassInfoSection classInfo={classInfo} />

@@ -68,7 +68,7 @@ export function RegisterForm({ session }: RegisterFormProps) {
   }, [token])
 
   return (
-    <main className="flex-grow flex flex-col items-center justify-center p-4 md:p-0 my-4">
+    <main className="flex-grow flex flex-col items-center justify-center p-4">
       {message && (
         <div className="text-xl uppercase font-bold mb-6 gap-4 flex justify-between items-center mt-10">
           <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
@@ -84,10 +84,10 @@ export function RegisterForm({ session }: RegisterFormProps) {
         </div>
       )}
       <form
-        className="w-96 border-blue-950 border-2 p-10 rounded-lg"
+        className="w-full sm:w-96  border-blue-950 border-2 p-10 rounded-lg"
         onSubmit={registerUser}
       >
-        <h1 className="text-center uppercase mb-10 font-bold text-xl text-blue-950">
+        <h1 className="text-center text-lg uppercase mb-10 font-bold sm:text-xl text-blue-950">
           registrar usuário
         </h1>
         <Input

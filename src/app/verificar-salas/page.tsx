@@ -11,7 +11,7 @@ export default async function VerifyRooms() {
   }
 
   return (
-    <main className="flex-grow px-20 py-10">
+    <main className="flex-grow px-6 md:px-20 py-10">
       <h1 className="uppercase font-bold text-xl">adicionar sala</h1>
       <TableInfoRooms session={session} />
     </main>

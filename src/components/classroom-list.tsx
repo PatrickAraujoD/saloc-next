@@ -190,7 +190,7 @@ export function ClassroomList({
           />
         </div>
       )}
-      {classes.length > 0 ? (
+      {classes?.length > 0 ? (
         <div className="overflow-auto">
           <table
             className="table-zebra-zebra table border-collapse"
@@ -312,32 +312,31 @@ export function ClassroomList({
             </tbody>
           </table>
         </div>
+      ) : loadingTable ? (
+        <table className="table border-collapse" ref={tableRef}>
+          <thead>
+            <tr className="text-black text-center">
+              {headersTableKeys.map((key, index) => (
+                <Th content={key} key={`${key}_loading_${index}`} />
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="text-black text-center p-10">
+              {headersTableKeys.map((key) => (
+                <td key={key + '_cell'} className="border-2 border-black w-56">
+                  <div className="flex items-center justify-center h-full">
+                    <div className="skeleton w-20 h-4" />
+                  </div>
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
       ) : (
-        loadingTable && (
-          <table className="table border-collapse" ref={tableRef}>
-            <thead>
-              <tr className="text-black text-center">
-                {headersTableKeys.map((key, index) => (
-                  <Th content={key} key={`${key}_loading_${index}`} />
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="text-black text-center p-10">
-                {headersTableKeys.map((key, index) => (
-                  <td
-                    key={key + '_cell'}
-                    className="border-2 border-black w-56"
-                  >
-                    <div className="flex items-center justify-center h-full">
-                      <div className="skeleton w-20 h-4" />
-                    </div>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        )
+        <h2 className="mt-4 text-center uppercase font-bold text-lg">
+          não existe dados para mostrar.
+        </h2>
       )}
       <ConfirmationModal
         isOpen={isModalOpen}

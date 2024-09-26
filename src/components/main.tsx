@@ -144,7 +144,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
       await api.post(
         'class/import_sigaa',
         {
-          periodId: period,
+          id_period: period,
         },
         {
           headers: { Authorization: 'Bearer ' + token },

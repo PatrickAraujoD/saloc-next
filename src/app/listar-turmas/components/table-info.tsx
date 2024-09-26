@@ -19,6 +19,7 @@ export function TableInfo({ session }: TableInfo) {
     with_rooms: [],
     without_rooms: [],
   })
+  const [loadingTable, setLoadingTable] = useState<boolean>(true)
   const token = session.token
 
   if (!period || !valueCourse || period === 'null') {
@@ -27,6 +28,7 @@ export function TableInfo({ session }: TableInfo) {
 
   useEffect(() => {
     async function fetchClass() {
+      setLoadingTable(true)
       try {
         const classes = await api.post(
           '/class/list/with_and_without_rooms',
@@ -46,6 +48,7 @@ export function TableInfo({ session }: TableInfo) {
       } catch (error) {
         console.error('Failed to fetch classes:', error)
       }
+      setLoadingTable(false)
     }
     fetchClass()
   }, [token, period, valueCourse])
@@ -55,7 +58,7 @@ export function TableInfo({ session }: TableInfo) {
       <section>
         <h2 className="uppercase font-semibold mb-4">turmas sem salas</h2>
         <ClassroomList
-          loadingTable={true}
+          loadingTable={loadingTable}
           action={true}
           classList={list.without_rooms}
           session={session}
@@ -64,7 +67,7 @@ export function TableInfo({ session }: TableInfo) {
       <section>
         <h2 className="uppercase font-semibold mb-4">turmas com salas</h2>
         <ClassroomList
-          loadingTable={true}
+          loadingTable={loadingTable}
           action={true}
           classList={list.with_rooms}
           session={session}

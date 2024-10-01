@@ -40,6 +40,8 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
   const [disciplineId, setDisciplineId] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingButtonSigaa, setIsLoadingButtonSigaa] = useState(false)
+  const [isLoadingAllocateAutomatic, setIsLoadingAllocateAutomatic] =
+    useState(false)
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
   const [listDisciplines, setListDisciplines] = useState([])
@@ -160,6 +162,30 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
     setIsLoadingButtonSigaa(false)
   }
 
+  async function allocationAutomatic() {
+    setIsLoadingAllocateAutomatic(true)
+    try {
+      const idSector = session?.user.sector?.id
+      const response = await api.post(
+        'class/allocate/automatic',
+        {
+          id_period: period,
+          id_sector: idSector,
+        },
+        {
+          headers: { Authorization: 'Bearer ' + token },
+        },
+      )
+      setMessage(response.data.message)
+      setIsError(false)
+    } catch (error) {
+      setMessage('Falha ao importar dados do sigaa')
+      setIsError(true)
+    }
+
+    setIsLoadingAllocateAutomatic(false)
+  }
+
   useEffect(() => {
     if (valueCourse) {
       fetchDiscipline(valueCourse)
@@ -225,23 +251,33 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
           </div>
         )}
 
-        <div className="flex items-center mt-4 gap-4">
+        <div className="flex items-center mt-4 gap-4 flex-wrap w-full justify-between sm:justify-start">
           <Button
             isButtonDisabled={isButtonDisabled}
             name="consultar"
             type="submit"
             title="consultar"
             isLoading={isLoading}
-            className={`h-14 xl:h-12 w-48 uppercase ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+            className={`h-14 xl:h-12 w-20 md:w-48 uppercase ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           />
+          {session && session.user.sector && (
+            <Button
+              title="alocar automático"
+              type="button"
+              onClick={allocationAutomatic}
+              isLoading={isLoadingAllocateAutomatic}
+              isButtonDisabled={isLoadingAllocateAutomatic}
+              className="h-14 xl:h-12 w-20 md:w-48"
+            />
+          )}
           {session && session.user.sector?.course && (
             <Button
-              isButtonDisabled={isLoading}
+              isButtonDisabled={isLoadingButtonSigaa}
               title="importar do sigaa"
               type="button"
               isLoading={isLoadingButtonSigaa}
               onClick={importDataSigaa}
-              className="h-14 xl:h-12 w-48"
+              className="h-14 xl:h-12 w-20 md:w-48"
             />
           )}
         </div>

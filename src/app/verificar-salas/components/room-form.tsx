@@ -16,6 +16,7 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
   const [capacity, setCapacity] = useState<number>(0)
   const [block, setBlock] = useState('')
   const [floor, setFloor] = useState('')
+  const [building, setBuilding] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
@@ -33,6 +34,7 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
           capacity,
           block,
           floor,
+          building,
         },
         { headers: { Authorization: `Bearer ${token}` } },
       )
@@ -63,6 +65,11 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
 
   function handleCaptureBlock(event: ChangeEvent<HTMLInputElement>) {
     setBlock(event.target.value)
+  }
+
+  function handleCaptureBuilding(event: ChangeEvent<HTMLInputElement>) {
+    const newBuilding = String(event.target.value)
+    setBuilding(newBuilding.toUpperCase())
   }
 
   function handleCaptureFloor(event: ChangeEvent<HTMLInputElement>) {
@@ -105,6 +112,12 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
             name={'capacity'}
             type="number"
             onChange={handleCaptureCapacity}
+          />
+          <Input
+            nameLabel={'prédio *'}
+            name={'building'}
+            type="text"
+            onChange={handleCaptureBuilding}
           />
           <Input
             nameLabel={'bloco *'}

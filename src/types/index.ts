@@ -7,6 +7,7 @@ export interface Room {
   capacity: number
   block: string
   floor: string
+  building: string
 }
 
 export interface Course {

@@ -241,14 +241,14 @@ export function ClassroomList({
                         const room = r.room ?? {}
                         const day = formatRoomBlock(r.schedule)
                         const formattedRoomBlock =
-                          room.sector === 'CCET'
+                          room.building === 'CCET'
                             ? `${'B' + room.block || ''}`
                             : room.block || ''
 
                         if (day) {
-                          return `${day} - ${room.number || ''} - ${room.sector || ''} - ${formattedRoomBlock}`
+                          return `${day} - ${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
                         } else {
-                          return `${room.number || ''} - ${room.sector || ''} - ${formattedRoomBlock}`
+                          return `${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
                         }
                       })
                       .join(' / ')}

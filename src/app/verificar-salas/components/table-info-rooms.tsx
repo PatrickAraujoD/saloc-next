@@ -145,7 +145,7 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
               {roomsList?.map((room) => (
                 <tr key={room.id} className="text-black text-center">
                   <Td content={room.number} />
-                  <Td content={room.sector} />
+                  <Td content={room.building} />
                   <Td content={room.capacity ? String(room.capacity) : ''} />
                   <Td content={room.block} />
                   <Td content={room.floor} />

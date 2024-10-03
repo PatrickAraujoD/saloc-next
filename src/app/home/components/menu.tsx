@@ -2,7 +2,6 @@
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/button'
 import { SessionProps } from '@/types'
-import { signOut } from 'next-auth/react'
 import { MdOutlineMenu } from 'react-icons/md'
 import { useState } from 'react'
 import { IoClose } from 'react-icons/io5'
@@ -45,6 +44,10 @@ export default function Menu({
 
   function redirecMapOfRooms() {
     router.push(`/mapa-salas`)
+  }
+
+  function redirectClass() {
+    router.push('/registrar-turma')
   }
 
   return (
@@ -93,6 +96,13 @@ export default function Menu({
                 type="button"
                 onClick={redirecCheckRooms}
                 className="bg-transparent border-transparent w-full"
+              />
+              <Button
+                isButtonDisabled={false}
+                title="adicionar turma"
+                type="button"
+                onClick={redirectClass}
+                className="sm:h-16 xl:h-12"
               />
             </>
           )}
@@ -158,6 +168,13 @@ export default function Menu({
               title="verificar salas"
               type="button"
               onClick={redirecCheckRooms}
+              className="sm:h-16 xl:h-12 px-2"
+            />
+            <Button
+              isButtonDisabled={false}
+              title="adicionar turma"
+              type="button"
+              onClick={redirectClass}
               className="sm:h-16 xl:h-12 px-2"
             />
           </>

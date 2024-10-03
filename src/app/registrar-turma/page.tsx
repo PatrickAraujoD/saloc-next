@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation'
 export default async function RegistrarTurma() {
   const session = await getServerSession(nextAuthConfig)
 
-  if (!session || !session.user.sector.course) redirect('/home')
+  if (!session || !session.user.sector) redirect('/home')
 
   return <FormRegisterClass session={session} />
 }

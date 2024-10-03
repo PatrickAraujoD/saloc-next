@@ -6,7 +6,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export function Input({ nameLabel, name, ...input }: InputProps) {
   return (
-    <div className="mb-6 space-y-1 w-full">
+    <div className="mt-4 space-y-1 w-full">
       <label htmlFor={name} className="uppercase font-semibold text-blue-950">
         {nameLabel}
       </label>

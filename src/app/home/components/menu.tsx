@@ -28,19 +28,6 @@ export default function Menu({
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
 
-  async function logout() {
-    await signOut({
-      redirect: false,
-    })
-
-    router.replace('/')
-    location.reload()
-  }
-
-  function redirectLogin() {
-    router.push('/login')
-  }
-
   function redirecAllocateRoom() {
     if (session?.user.course) {
       const course = session.user.course.id
@@ -75,7 +62,6 @@ export default function Menu({
             isButtonDisabled={isButtonDisabled}
             type="button"
             title="relatório"
-            colorTextBlack={true}
             className="bg-transparent border-transparent w-full"
             onClick={() => {
               if (session?.user.course) {
@@ -92,14 +78,12 @@ export default function Menu({
                 title="alocar turmas"
                 type="button"
                 onClick={redirecAllocateRoom}
-                colorTextBlack={true}
                 className="bg-transparent border-transparent w-full"
               />
               <Button
                 isButtonDisabled={false}
                 title="mapa de sala"
                 type="button"
-                colorTextBlack={true}
                 onClick={redirecMapOfRooms}
                 className="bg-transparent border-transparent w-full"
               />
@@ -108,20 +92,9 @@ export default function Menu({
                 title="verificar salas"
                 type="button"
                 onClick={redirecCheckRooms}
-                colorTextBlack={true}
                 className="bg-transparent border-transparent w-full"
               />
             </>
-          )}
-          {session && (
-            <Button
-              isButtonDisabled={false}
-              title="sair"
-              type="button"
-              onClick={logout}
-              colorTextBlack={true}
-              className="bg-transparent border-transparent w-full"
-            />
           )}
           {session && session.user.isAdmin && (
             <>
@@ -129,7 +102,6 @@ export default function Menu({
                 isButtonDisabled={false}
                 title="adicionar usuário"
                 type="button"
-                colorTextBlack={true}
                 onClick={() => router.push(`/register`)}
                 className="bg-transparent border-transparent w-full"
               />
@@ -137,7 +109,6 @@ export default function Menu({
                 isButtonDisabled={false}
                 title="adicionar curso"
                 type="button"
-                colorTextBlack={true}
                 onClick={() => router.push(`/registrar-curso`)}
                 className="bg-transparent border-transparent w-full"
               />
@@ -145,21 +116,10 @@ export default function Menu({
                 isButtonDisabled={false}
                 title="adicionar setor"
                 type="button"
-                colorTextBlack={true}
                 onClick={() => router.push(`/registrar-setor`)}
                 className="bg-transparent border-transparent w-full"
               />
             </>
-          )}
-          {!session && (
-            <Button
-              isButtonDisabled={false}
-              title="login"
-              type="button"
-              colorTextBlack={true}
-              onClick={redirectLogin}
-              className="bg-transparent w-full"
-            />
           )}
         </div>
       </details>
@@ -202,15 +162,6 @@ export default function Menu({
             />
           </>
         )}
-        {session && (
-          <Button
-            isButtonDisabled={false}
-            title="sair"
-            type="button"
-            onClick={logout}
-            className="sm:h-16 xl:h-12"
-          />
-        )}
         {session && session.user.isAdmin && (
           <>
             <Button
@@ -235,15 +186,6 @@ export default function Menu({
               className="sm:h-16 xl:h-12 px-2"
             />
           </>
-        )}
-        {!session && (
-          <Button
-            isButtonDisabled={false}
-            title="login"
-            type="button"
-            onClick={redirectLogin}
-            className="sm:h-16 xl:h-12"
-          />
         )}
       </div>
     </section>

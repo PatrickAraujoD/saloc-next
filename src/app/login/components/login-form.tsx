@@ -78,6 +78,7 @@ export function LoginForm() {
           title="Entrar"
           isButtonDisabled={isLoading}
           isLoading={isLoading}
+          className="mt-6"
         />
       </form>
     </main>

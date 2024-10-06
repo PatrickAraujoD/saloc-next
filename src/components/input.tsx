@@ -8,12 +8,12 @@ export function Input({ nameLabel, name, ...input }: InputProps) {
   return (
     <div className="mt-4 space-y-1 w-full">
       <label htmlFor={name} className="uppercase font-semibold text-blue-950">
-        {nameLabel}
+        {nameLabel}:
       </label>
       <input
         name={name}
         id={name}
-        className="w-full bg-transparent border-2 border-blue-950 pl-2 py-2 rounded-md placeholder:capitalize"
+        className="w-full bg-transparent border-2 border-blue-950 pl-2 py-2 rounded-md"
         {...input}
       />
     </div>

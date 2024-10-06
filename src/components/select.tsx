@@ -19,6 +19,7 @@ interface SelectProps<T extends BaseOption>
   options?: T[]
   className?: string
   selectRef?: RefObject<HTMLSelectElement>
+  showInput?: boolean
 }
 
 export function Select<T extends BaseOption>({
@@ -28,12 +29,19 @@ export function Select<T extends BaseOption>({
   onChange,
   className,
   selectRef,
+  showInput,
   ...select
 }: SelectProps<T>) {
   const renderOptions = () => {
     return (
       <>
         <option value={0}>--</option>
+        {showInput && (
+          <option value={-1} className="uppercase">
+            outra disciplina
+          </option>
+        )}
+
         {Array.isArray(options) &&
           options.map((option) => {
             if (option.type === 'room') {

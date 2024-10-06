@@ -1,13 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import Select, { MultiValue } from 'react-select'
 import { Button } from '@/components/button'
 import { Select as SelectDiscipline } from '@/components/select'
 import { Input } from '@/components/input'
 import { api } from '@/services/api'
 import { SessionProps } from '@/types'
-import { listDiscipline, listPeriod, listTeacher } from '@/services/http'
+import {
+  listPeriod,
+  listTeacher,
+  getCourses,
+  listDiscipline,
+} from '@/services/http'
+import { Axios } from 'axios'
 
 interface ProfessorOption {
   value: string
@@ -20,77 +25,107 @@ interface FormRegisterClassProps {
 
 export function FormRegisterClass({ session }: FormRegisterClassProps) {
   const [selectedProfessores, setSelectedProfessores] = useState<string[]>([])
-  const [quantityStudy, setQuantityStudy] = useState<string>('')
-  const [classNumber, setClassNumber] = useState<string>('')
-  const [schedule, setSchedule] = useState<string>('')
-  const [discipline, setDiscipline] = useState<number>(0)
-  const [period, setPeriod] = useState<number>(0)
   const [listPeriods, setListPeriods] = useState<[]>([])
+  const [listCourses, setListCourses] = useState<[]>([])
   const [listTeachers, setListTeachers] = useState<[]>([])
   const [listDisciplines, setListDisciplines] = useState<[]>([])
   const [message, setMessage] = useState<string>('')
   const [isError, setIsError] = useState<boolean>(false)
-  const [isloading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [course, setCourse] = useState<number>(0)
+  const [discipline, setDiscipline] = useState<number>(0)
+
   const token = session.token
-  const idCourse = session?.user.sector.course
 
   const handleProfessoresChange = (
     selectedOptions: MultiValue<ProfessorOption>,
   ) => {
     const selectedValues = selectedOptions.map((option) => option.value)
+    console.log(selectedValues)
     setSelectedProfessores(selectedValues)
   }
 
-  function handleCaptureQuantityStudy(event: ChangeEvent<HTMLInputElement>) {
-    setQuantityStudy(event.target.value)
-  }
+  // const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault()
+  //   setIsLoading(true)
 
-  function handleCaptureSchedule(event: ChangeEvent<HTMLInputElement>) {
-    setSchedule(event.target.value.toUpperCase())
-  }
+  //   const formData = new FormData(e.target as HTMLFormElement)
+  //   const event = e.target as HTMLFormElement
+  //   console.log(event)
+  //   console.log(formData)
 
-  function handleCaptureClassNumber(event: ChangeEvent<HTMLInputElement>) {
-    setClassNumber(event.target.value)
-  }
+  //   // formData.append('teachers', selectedProfessores.join(','))
 
-  function handleCaptureDiscipline(event: ChangeEvent<HTMLSelectElement>) {
-    const newDiscipline = Number(event.target.value)
-    setDiscipline(newDiscipline)
-  }
+  //   try {
+  //     // const response = await api.post('/classe/register', formData, {
+  //     //   headers: { Authorization: 'Bearer ' + token },
+  //     // })
 
-  function handleCapturePeriod(event: ChangeEvent<HTMLSelectElement>) {
-    const newPeriod = Number(event.target.value)
-    setPeriod(newPeriod)
-  }
+  //     // setMessage(response.data.message)
+  //     // setIsError(false)
+  //     console.log(formData)
+  //   } catch (error: any) {
+  //     setMessage(
+  //       `Não foi possível salvar a turma: ${error.response?.data?.error}`,
+  //     )
+  //     setIsError(true)
+  //   }
+  //   setIsLoading(false)
+  // }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
     setIsLoading(true)
-    e.preventDefault()
 
-    const classData = {
-      teachers: selectedProfessores,
-      classNumber,
-      schedule,
-      quantityStudy,
-      discipline,
-      period,
-    }
+    const formData = new FormData(event.target as HTMLFormElement)
+
+    const data = Object.fromEntries(formData.entries())
 
     try {
-      const response = await api.post('/classe/register', classData, {
+      const response = await api.post('/class/register', formData, {
         headers: { Authorization: 'Bearer ' + token },
       })
-
       setMessage(response.data.message)
       setIsError(false)
-    } catch (error: any) {
-      setMessage(
-        `Não foi possível salvar a turma: ${error.response.data.error}`,
-      )
+    } catch (error) {
+      setMessage(`Falha ao salvar a turma`)
       setIsError(true)
     }
+
     setIsLoading(false)
   }
+
+  useEffect(() => {
+    async function dataInitial() {
+      const [period, teachers, courses] = await Promise.all([
+        listPeriod(),
+        listTeacher(),
+        getCourses(),
+      ])
+
+      const formattedTeachers = teachers.map((teacher: any) => ({
+        value: teacher.id,
+        label: teacher.name,
+      }))
+
+      setListPeriods(period)
+      setListTeachers(formattedTeachers)
+      setListCourses(courses)
+    }
+
+    dataInitial()
+  }, [])
+
+  useEffect(() => {
+    async function getDisciplines() {
+      if (course > 0) {
+        const disciplines = await listDiscipline(course)
+        setListDisciplines(disciplines)
+      }
+    }
+
+    getDisciplines()
+  }, [course])
 
   const customStyles = {
     control: (base: any) => ({
@@ -115,34 +150,7 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
     }),
   }
 
-  useEffect(() => {
-    async function dataInitial() {
-      const courseId = Number(idCourse)
-      const [period, teachers, disciplines] = await Promise.all([
-        listPeriod(),
-        listTeacher(),
-        listDiscipline(courseId),
-      ])
-
-      const formattedTeachers = teachers.map((teacher: any) => ({
-        value: teacher.id,
-        label: teacher.name,
-      }))
-
-      setListPeriods(period)
-      setListTeachers(formattedTeachers)
-      setListDisciplines(disciplines)
-    }
-
-    dataInitial()
-  }, [idCourse])
-
-  const isButtonDisabled =
-    selectedProfessores.length === 0 &&
-    schedule === '' &&
-    quantityStudy === '' &&
-    discipline === 0 &&
-    period === 0
+  const isButtonDisabled = !selectedProfessores.length
 
   return (
     <main className="py-10 flex-1 flex flex-col items-center justify-center">
@@ -155,7 +163,7 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
             isButtonDisabled={false}
             title="x"
             type="button"
-            className={`flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'} `}
+            className={`flex items-center justify-center border-2 px-2 rounded-lg hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'}`}
             onClick={() => setMessage('')}
           />
         </div>
@@ -167,36 +175,47 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
         <h1 className="uppercase font-bold text-blue-950 text-center">
           Registrar Turma
         </h1>
-        <div className="mb-4">
-          <SelectDiscipline
-            options={listDisciplines}
-            nameLabel="disciplina"
-            onChange={handleCaptureDiscipline}
-          />
-        </div>
+
         <SelectDiscipline
-          options={listPeriods}
-          nameLabel="periodo"
-          onChange={handleCapturePeriod}
-        />
-        <Input
-          nameLabel="quantidade de alunos"
-          type="number"
-          onChange={handleCaptureQuantityStudy}
-        />
-        <Input
-          nameLabel="número da turma"
-          type="text"
-          onChange={handleCaptureClassNumber}
-        />
-        <Input
-          nameLabel="horário"
-          type="text"
-          onChange={handleCaptureSchedule}
+          options={listCourses}
+          nameLabel="Cursos"
+          name="id_course"
+          onChange={(e) => setCourse(Number(e.target.value))}
         />
 
-        <div className="mb-4">
-          <label className="font-bold text-blue-950 uppercase">
+        <SelectDiscipline
+          options={listDisciplines}
+          nameLabel="Disciplina"
+          name="id_discipline"
+          onChange={(e) => setDiscipline(Number(e.target.value))}
+          showInput={true}
+        />
+
+        {discipline === -1 && (
+          <div>
+            <Input name="name" nameLabel="disciplina" type="text" />
+            <Input name="code" nameLabel="código" type="text" />
+            <Input name="departament" nameLabel="departamento" type="text" />
+            <Input name="period" nameLabel="período" type="text" />
+          </div>
+        )}
+
+        <SelectDiscipline
+          options={listPeriods}
+          nameLabel="semestre"
+          name="semester"
+        />
+
+        <Input
+          name="quantityStudy"
+          nameLabel="Quantidade de Alunos"
+          type="number"
+        />
+        <Input name="classNumber" nameLabel="Número da Turma" type="text" />
+        <Input name="schedule" nameLabel="Horário" type="text" />
+
+        <div className="mt-4">
+          <label className="font-semibold text-blue-950 uppercase">
             Professores
           </label>
           <Select
@@ -204,6 +223,7 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
             options={listTeachers}
             onChange={handleProfessoresChange}
             styles={customStyles}
+            name="teachers"
             className="basic-multi-select"
             classNamePrefix="select"
             placeholder="--"
@@ -214,7 +234,8 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
           isButtonDisabled={isButtonDisabled}
           title="Enviar"
           className="mt-4 w-full"
-          isLoading={isloading}
+          isLoading={isLoading}
+          type="submit"
         />
       </form>
     </main>

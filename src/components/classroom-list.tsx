@@ -4,10 +4,16 @@ import { Th } from './th'
 import { RefObject, useEffect, useState } from 'react'
 import { Button } from './button'
 import { api } from '@/services/api'
-import { ConfirmationModal } from './confirmation-modal'
+import { SendAllRequest } from './send-all-modal'
 import { SendRequestModal } from './send-request-modal'
 import { HiCheck } from 'react-icons/hi'
-import { HiArchiveBoxXMark } from 'react-icons/hi2'
+import { MdOutlineArrowForward } from 'react-icons/md'
+import { Input } from './input'
+
+export interface SelectedClassesProps {
+  id: number
+  schedule: string
+}
 
 interface Request {
   destination: number
@@ -40,11 +46,12 @@ interface TableProps {
 }
 
 const headersTableKeys = [
+  'envios',
   'periodo',
   'código',
   'nome da disciplina',
   'departamento',
-  'numeroTurma',
+  'numero da turma',
   'horário',
   'quantidade de alunos',
   'docente',
@@ -65,7 +72,11 @@ export function ClassroomList({
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(
     null,
   )
+  const [selectedRequests, setSelectedRequests] = useState<number[]>([])
   const [selectedClass, setSelectedClass] = useState<number | null>()
+  const [selectedClasses, setSelectedClasses] = useState<
+    SelectedClassesProps[]
+  >([])
   const [message, setMessage] = useState('')
   const token = session?.token
   const origin = session?.user.sector?.id
@@ -76,25 +87,6 @@ export function ClassroomList({
       {
         id: idRequest,
         status: 'aceita',
-      },
-      { headers: { Authorization: 'Bearer ' + token } },
-    )
-
-    const responseClass = await api.post('/class/list', {
-      valueCourse: classList[0].class.course.id,
-      period: classList[0].class.period.id,
-      idSector: session?.user.sector.id,
-    })
-
-    setClasses(responseClass.data)
-  }
-
-  async function handleRecuseClass(idRequest: number) {
-    await api.post(
-      '/request/update_status',
-      {
-        id: idRequest,
-        status: 'recusada',
       },
       { headers: { Authorization: 'Bearer ' + token } },
     )
@@ -129,6 +121,33 @@ export function ClassroomList({
     setClasses(classList)
   }, [classList])
 
+  const handleSelectClassesAndRequests = (
+    classe: SelectedClassesProps,
+    isChecked: boolean,
+    requestId?: number,
+  ) => {
+    setSelectedClasses((prevSelected) => {
+      if (isChecked) {
+        return [...prevSelected, classe]
+      } else {
+        return prevSelected.filter(
+          (classExists: SelectedClassesProps) => classExists.id !== classe.id,
+        )
+      }
+    })
+    if (requestId) {
+      setSelectedRequests((prevSelected) => {
+        if (isChecked) {
+          return [...prevSelected, requestId]
+        } else {
+          return prevSelected.filter(
+            (requestId) => requestId !== requestId,
+          )
+        }
+      })
+    }
+  }
+
   const handleOpenModal = (idRequest: number) => {
     setSelectedRequestId(idRequest)
     setIsModalOpen(true)
@@ -145,14 +164,48 @@ export function ClassroomList({
   }
 
   const handleCloseModal = () => {
-    setSelectedRequestId(null)
     setIsModalOpen(false)
   }
 
-  const handleConfirmModal = () => {
-    if (selectedRequestId !== null) {
-      handleRecuseClass(selectedRequestId)
-      handleCloseModal()
+  const handleConfirmSendSelectedClasses = async (
+    classes: SelectedClassesProps[],
+    destination: number,
+  ) => {
+    const response = await api.post(
+      '/request/send_all',
+      {
+        destination,
+        classes,
+      },
+      {
+        headers: { Authorization: 'Bearer ' + token },
+      },
+    )
+    setMessage(response.data)
+    handleCloseModalSendRequest()
+  }
+
+  const handleAcceptSelectedRequests = async () => {
+    try {
+      const response = await api.post('/request/accept_all', {
+        "requests": selectedRequests
+      }, 
+      {
+        headers: { Authorization: 'Bearer ' + token },
+      })
+
+      const responseClass = await api.post('/class/list', {
+        valueCourse: classList[0].class.course.id,
+        period: classList[0].class.period.id,
+        idSector: session?.user.sector.id,
+      })
+  
+      setClasses(responseClass.data)
+
+      setMessage(response.data)
+      setSelectedRequests([])
+    } catch (error) {
+      setMessage("Ocorreu algum erro no momento de aceitar as solicitações")
     }
   }
 
@@ -219,6 +272,22 @@ export function ClassroomList({
             <tbody>
               {classes.map((classData) => (
                 <tr key={classData.id} className="text-black text-center">
+                  <td className="border-2 border-black">
+                    <Input
+                      type="checkbox"
+                      typeInput="checkbox"
+                      onChange={(e) =>
+                        handleSelectClassesAndRequests(
+                          {
+                            id: classData.class.id,
+                            schedule: classData.class.classSchedule,
+                          },
+                          e.target.checked,
+                          classData.request?.id,
+                        )
+                      }
+                    />
+                  </td>
                   <Td content={String(classData.class.discipline.period)} />
                   <Td content={classData.class.discipline.code} />
                   <Td content={classData.class.discipline.name} />
@@ -263,47 +332,46 @@ export function ClassroomList({
                       </a>
                     </td>
                   ) : classData.request ? (
-                    classData.request.status === 'analise' ? (
-                      <td className="border-2 border-black">
-                        <div className="flex flex-col gap-1 justify-center items-center">
+                    <td className="border-2 border-black">
+                      <div className="flex flex-col gap-1 justify-center items-center">
+                        {classData.request.status === 'analise' && (
                           <Button
                             isButtonDisabled={false}
-                            className="w-10 flex items-center justify-center"
+                            className="w-7 h-7 flex items-center justify-center"
                             onClick={() => {
                               if (classData.request) {
                                 handleAcceptClass(classData.request.id)
                               }
                             }}
                           >
-                            <HiCheck size={24} />
+                            <HiCheck size={20} />
                           </Button>
-                          <Button
-                            isButtonDisabled={false}
-                            className="bg-red-700 w-10 hover:border-red-700 hover:text-red-700 flex items-center justify-center"
-                            onClick={() => {
-                              if (classData.request) {
-                                handleOpenModal(classData.request.id)
-                              }
-                            }}
-                          >
-                            <HiArchiveBoxXMark size={24} />
-                          </Button>
-                        </div>
-                      </td>
-                    ) : (
-                      <Td content="--" />
-                    )
+                        )}
+                        <Button
+                          isButtonDisabled={false}
+                          className="w-7 h-7 flex items-center justify-center"
+                          onClick={() => {
+                            if (classData.request) {
+                              handleOpenModal(classData.request.id)
+                            }
+                          }}
+                        >
+                          <MdOutlineArrowForward size={20} />
+                        </Button>
+                      </div>
+                    </td>
                   ) : (
                     session?.user.sector?.course && (
                       <td className="border-2 border-black border-l-2">
                         <Button
                           isButtonDisabled={false}
-                          title=">"
-                          className="text-xs w-6"
+                          className="w-7 h-7"
                           onClick={() => {
                             handleSendRequestModal(classData.class.id)
                           }}
-                        />
+                        >
+                          <MdOutlineArrowForward size={24} />
+                        </Button>
                       </td>
                     )
                   )}
@@ -311,6 +379,26 @@ export function ClassroomList({
               ))}
             </tbody>
           </table>
+            {session?.user.sector && (
+              <div>
+                <Button
+                  isButtonDisabled={false}
+                  type="button"
+                  title="enviar selecionadas"
+                  className="mt-4 text-sm mr-4"
+                  onClick={() => setIsModalOpen(true)}
+                />
+                {!session?.user.sector.course && (
+                  <Button 
+                    isButtonDisabled={false}
+                    type='button'
+                    title='aceitar solicitações'
+                    className="mt-4 text-sm"
+                    onClick={() => handleAcceptSelectedRequests()}
+                  />
+                )}
+              </div>
+            )}
         </div>
       ) : loadingTable ? (
         <table className="table border-collapse" ref={tableRef}>
@@ -338,11 +426,13 @@ export function ClassroomList({
           não existe dados para mostrar.
         </h2>
       )}
-      <ConfirmationModal
+      <SendAllRequest
         isOpen={isModalOpen}
+        classes={selectedClasses}
         onClose={handleCloseModal}
-        message="Tem certeza que deseja recusar essa turma?"
-        onConfirm={handleConfirmModal}
+        message="informe o setor que deseja enviar as solicitações"
+        onConfirm={handleConfirmSendSelectedClasses}
+        token={token}
       />
       <SendRequestModal
         isOpen={isModalOpenSendRequest}

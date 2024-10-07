@@ -155,6 +155,11 @@ export function ClassroomList({
     setIsModalOpen(true)
   }
 
+  const handleOpenSendModal = (idRequest: number) => {
+    setSelectedRequestId(idRequest)
+    setIsModalOpenSendRequest(true)
+  }
+
   const handleSendRequestModal = (idClass: number) => {
     setSelectedClass(idClass)
     setIsModalOpenSendRequest(true)
@@ -292,16 +297,25 @@ export function ClassroomList({
                       <Input
                         type="checkbox"
                         typeInput="checkbox"
-                        onChange={(e) =>
-                          handleSelectClassesAndRequests(
-                            {
-                              id: classData.class.id,
-                              schedule: classData.class.classSchedule,
-                            },
-                            e.target.checked,
-                            classData.request?.id,
-                          )
-                        }
+                        onChange={(e) => {
+                          !session.user.course && classData.request
+                            ? handleSelectClassesAndRequests(
+                                {
+                                  id: classData.class.id,
+                                  schedule: classData.request?.schedule,
+                                },
+                                e.target.checked,
+                                classData.request?.id,
+                              )
+                            : handleSelectClassesAndRequests(
+                                {
+                                  id: classData.class.id,
+                                  schedule: classData.class.classSchedule,
+                                },
+                                e.target.checked,
+                                classData.request?.id,
+                              )
+                        }}
                       />
                     </td>
                   )}
@@ -369,9 +383,7 @@ export function ClassroomList({
                           isButtonDisabled={false}
                           className="w-7 h-7 flex items-center justify-center"
                           onClick={() => {
-                            if (classData.request) {
-                              handleOpenModal(classData.request.id)
-                            }
+                            handleSendRequestModal(classData.class.id)
                           }}
                         >
                           <MdOutlineArrowForward size={20} />

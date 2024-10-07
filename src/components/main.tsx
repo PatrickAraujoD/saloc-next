@@ -13,6 +13,7 @@ import { api } from '@/services/api'
 import { SessionProps, Teacher } from '@/types/index'
 import usePdfGenerator from '@/hooks/use-pdf-generator'
 import Menu from '@/app/home/components/menu'
+import { headers } from 'next/headers'
 
 interface Course {
   id: number
@@ -46,6 +47,9 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
   const [isError, setIsError] = useState(false)
   const [listDisciplines, setListDisciplines] = useState([])
   const [listclass, setListClass] = useState([])
+  const [classesInProgress, setClassesInProgress] = useState([])
+  const [classesNotSent, setClassesNotSent] = useState([])
+  const [completedClasses, setCompletedClasses] = useState([])
   const token = session?.token
 
   function captureValueCourse(event: ChangeEvent<HTMLSelectElement>) {
@@ -130,8 +134,18 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
     }
 
     try {
-      const response = await api.post('/class/list', body)
-      setListClass(response.data)
+      let response
+      if (!session?.user.sector.course || session.user.isAdmin || !session) {
+        response = await api.post('/class/list', body)
+        setListClass(response.data)
+      } else {
+        response = await api.post('/request/progress', body, {
+          headers: { Authorization: 'Bearer ' + token },
+        })
+        setClassesInProgress(response.data.accepted_in_analysis)
+        setClassesNotSent(response.data.not_in_requests)
+        setCompletedClasses(response.data.allocated_classes)
+      }
     } catch (error) {
       setMessage('servidor offline')
       setIsError(true)
@@ -282,12 +296,53 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
           )}
         </div>
       </form>
-      <ClassroomList
-        classList={listclass}
-        tableRef={tableRef}
-        session={session}
-        loadingTable={false}
-      />
+      {session?.user.sector?.course ? (
+        <div>
+          <div>
+            <h2 className="uppercase text-blue-950 font-bold text-lg">
+              turmas que ainda não foram enviadas
+            </h2>
+            <ClassroomList
+              classList={classesNotSent}
+              showActions={true}
+              tableRef={tableRef}
+              session={session}
+              loadingTable={false}
+            />
+          </div>
+          <div>
+            <h2 className="uppercase text-blue-950 font-bold text-lg">
+              turmas que estão em progresso
+            </h2>
+            <ClassroomList
+              classList={classesInProgress}
+              tableRef={tableRef}
+              session={session}
+              loadingTable={false}
+            />
+          </div>
+          <div>
+            <h2 className="uppercase text-blue-950 font-bold text-lg">
+              turmas finalizadas
+            </h2>
+            <ClassroomList
+              classList={completedClasses}
+              tableRef={tableRef}
+              session={session}
+              loadingTable={false}
+            />
+          </div>
+        </div>
+      ) : (
+        <ClassroomList
+          classList={listclass}
+          showActions={true}
+          action={true}
+          tableRef={tableRef}
+          session={session}
+          loadingTable={false}
+        />
+      )}
     </main>
   )
 }

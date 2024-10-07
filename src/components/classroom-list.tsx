@@ -43,6 +43,7 @@ interface TableProps {
   tableRef?: RefObject<HTMLTableElement>
   session: SessionProps | null
   loadingTable: boolean
+  showActions?: boolean
 }
 
 const headersTableKeys = [
@@ -65,6 +66,7 @@ export function ClassroomList({
   tableRef,
   loadingTable,
   session,
+  showActions,
 }: TableProps) {
   const [classes, setClasses] = useState<ClassComplet[]>(classList)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -141,7 +143,7 @@ export function ClassroomList({
           return [...prevSelected, requestId]
         } else {
           return prevSelected.filter(
-            (requestId) => requestId !== requestId,
+            (requestPrevId) => requestPrevId !== requestId,
           )
         }
       })
@@ -187,25 +189,28 @@ export function ClassroomList({
 
   const handleAcceptSelectedRequests = async () => {
     try {
-      const response = await api.post('/request/accept_all', {
-        "requests": selectedRequests
-      }, 
-      {
-        headers: { Authorization: 'Bearer ' + token },
-      })
+      const response = await api.post(
+        '/request/accept_all',
+        {
+          requests: selectedRequests,
+        },
+        {
+          headers: { Authorization: 'Bearer ' + token },
+        },
+      )
 
       const responseClass = await api.post('/class/list', {
         valueCourse: classList[0].class.course.id,
         period: classList[0].class.period.id,
         idSector: session?.user.sector.id,
       })
-  
+
       setClasses(responseClass.data)
 
       setMessage(response.data)
       setSelectedRequests([])
     } catch (error) {
-      setMessage("Ocorreu algum erro no momento de aceitar as solicitações")
+      setMessage('Ocorreu algum erro no momento de aceitar as solicitações')
     }
   }
 
@@ -252,17 +257,27 @@ export function ClassroomList({
             <thead>
               <tr className="text-black text-center">
                 {headersTableKeys.map((key) => {
-                  if (key !== 'ações') {
+                  if (showActions && session?.user.sector && key === 'envios') {
+                    return <Th content={key} key={key} />
+                  }
+
+                  if (key !== 'ações' && key !== 'envios') {
                     return <Th content={key} key={key} />
                   }
 
                   if (
-                    key === 'ações' &&
-                    (action ||
-                      classes[0].request ||
-                      session?.user.sector?.course)
+                    (action || showActions) &&
+                    session?.user.sector &&
+                    key === 'ações'
                   ) {
-                    return <Th content={key} key={key} />
+                    const shouldShowActions =
+                      action ||
+                      classes[0].request ||
+                      session?.user.sector?.course
+
+                    if (shouldShowActions) {
+                      return <Th content={key} key={key} />
+                    }
                   }
 
                   return null
@@ -272,22 +287,25 @@ export function ClassroomList({
             <tbody>
               {classes.map((classData) => (
                 <tr key={classData.id} className="text-black text-center">
-                  <td className="border-2 border-black">
-                    <Input
-                      type="checkbox"
-                      typeInput="checkbox"
-                      onChange={(e) =>
-                        handleSelectClassesAndRequests(
-                          {
-                            id: classData.class.id,
-                            schedule: classData.class.classSchedule,
-                          },
-                          e.target.checked,
-                          classData.request?.id,
-                        )
-                      }
-                    />
-                  </td>
+                  {showActions && session?.user.sector && (
+                    <td className="border-2 border-black">
+                      <Input
+                        type="checkbox"
+                        typeInput="checkbox"
+                        onChange={(e) =>
+                          handleSelectClassesAndRequests(
+                            {
+                              id: classData.class.id,
+                              schedule: classData.class.classSchedule,
+                            },
+                            e.target.checked,
+                            classData.request?.id,
+                          )
+                        }
+                      />
+                    </td>
+                  )}
+
                   <Td content={String(classData.class.discipline.period)} />
                   <Td content={classData.class.discipline.code} />
                   <Td content={classData.class.discipline.name} />
@@ -322,7 +340,7 @@ export function ClassroomList({
                       })
                       .join(' / ')}
                   />
-                  {action ? (
+                  {action && session?.user.sector.course ? (
                     <td className="border-2 border-black">
                       <a
                         href={`alocar-turma/${classData.class.id}/${classData.request ? classData.request.schedule : classData.class.classSchedule}`}
@@ -331,7 +349,7 @@ export function ClassroomList({
                         Alocar
                       </a>
                     </td>
-                  ) : classData.request ? (
+                  ) : classData.request && showActions ? (
                     <td className="border-2 border-black">
                       <div className="flex flex-col gap-1 justify-center items-center">
                         {classData.request.status === 'analise' && (
@@ -361,7 +379,8 @@ export function ClassroomList({
                       </div>
                     </td>
                   ) : (
-                    session?.user.sector?.course && (
+                    session?.user.sector?.course &&
+                    showActions && (
                       <td className="border-2 border-black border-l-2">
                         <Button
                           isButtonDisabled={false}
@@ -379,26 +398,26 @@ export function ClassroomList({
               ))}
             </tbody>
           </table>
-            {session?.user.sector && (
-              <div>
+          {session?.user.sector && showActions && (
+            <div>
+              <Button
+                isButtonDisabled={false}
+                type="button"
+                title="enviar selecionadas"
+                className="mt-4 text-sm mr-4"
+                onClick={() => setIsModalOpen(true)}
+              />
+              {!session?.user.sector.course && (
                 <Button
                   isButtonDisabled={false}
                   type="button"
-                  title="enviar selecionadas"
-                  className="mt-4 text-sm mr-4"
-                  onClick={() => setIsModalOpen(true)}
+                  title="aceitar solicitações"
+                  className="mt-4 text-sm"
+                  onClick={() => handleAcceptSelectedRequests()}
                 />
-                {!session?.user.sector.course && (
-                  <Button 
-                    isButtonDisabled={false}
-                    type='button'
-                    title='aceitar solicitações'
-                    className="mt-4 text-sm"
-                    onClick={() => handleAcceptSelectedRequests()}
-                  />
-                )}
-              </div>
-            )}
+              )}
+            </div>
+          )}
         </div>
       ) : loadingTable ? (
         <table className="table border-collapse" ref={tableRef}>

@@ -35,7 +35,7 @@ export function SendRequestModal({
   async function handleSearchSchedules() {
     try {
       const response = await api.post(
-        `/schedule/list/${idClass}`,
+        `/schedule/list/request/${idClass}`,
         {},
         {
           headers: { Authorization: `Bearer ${token}` },

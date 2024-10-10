@@ -51,7 +51,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
         ? scheduleRequest.join(',')
         : decodeURIComponent(scheduleRequest)
       const response = await api.post(
-        `/schedule/list/${idClass}`,
+        `/schedule/list/allocate/${idClass}`,
         {
           schedule: decodedScheduleRequest,
         },

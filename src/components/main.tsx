@@ -102,54 +102,8 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
   async function handleSubmit(event: React.FormEvent) {
     setIsLoading(true)
     event.preventDefault()
-    let body
-    if (!session || !session.user.sector?.course) {
-      let idSector: number | null = null
-      if (session) {
-        idSector = session.user.sector?.id
-      }
 
-      if (idSector) {
-        body = {
-          valueCourse,
-          period,
-          teacher: teacherId,
-          discipline: disciplineId,
-          idSector,
-        }
-      } else {
-        body = {
-          valueCourse,
-          period,
-          teacher: teacherId,
-          discipline: disciplineId,
-        }
-      }
-    } else {
-      const course = session.user.sector.course
-      body = {
-        valueCourse: course,
-        period,
-      }
-    }
-
-    try {
-      let response
-      if (!session?.user.sector.course || session.user.isAdmin || !session) {
-        response = await api.post('/class/list', body)
-        setListClass(response.data)
-      } else {
-        response = await api.post('/request/progress', body, {
-          headers: { Authorization: 'Bearer ' + token },
-        })
-        setClassesInProgress(response.data.accepted_in_analysis)
-        setClassesNotSent(response.data.not_in_requests)
-        setCompletedClasses(response.data.allocated_classes)
-      }
-    } catch (error) {
-      setMessage('servidor offline')
-      setIsError(true)
-    }
+    await handleUpdateTable()
 
     setIsLoading(false)
   }
@@ -198,6 +152,53 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
     }
 
     setIsLoadingAllocateAutomatic(false)
+  }
+
+  const handleUpdateTable = async () => {
+    let idSector: number | null = null
+    let body: any = {}
+
+    if (session) {
+      idSector = session.user.sector?.id
+
+      if (idSector) {
+        body = {
+          valueCourse,
+          period,
+          teacher: teacherId,
+          discipline: disciplineId,
+          idSector,
+        }
+      } else {
+        const course = session.user.sector?.course
+        body = {
+          valueCourse: course,
+          period,
+        }
+      }
+    }
+
+    try {
+      let response
+      const isCourseUndefined = !session?.user.sector?.course
+      const isAdmin = session?.user.isAdmin
+      const hasNoSession = !session
+
+      if (isCourseUndefined || isAdmin || hasNoSession) {
+        response = await api.post('/class/list', body)
+        setListClass(response.data)
+      } else {
+        response = await api.post('/request/progress', body, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        setClassesInProgress(response.data.accepted_in_analysis)
+        setClassesNotSent(response.data.not_in_requests)
+        setCompletedClasses(response.data.allocated_classes)
+      }
+    } catch (error) {
+      setMessage('Servidor offline')
+      setIsError(true)
+    }
   }
 
   useEffect(() => {
@@ -305,6 +306,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
             <ClassroomList
               classList={classesNotSent}
               showActions={true}
+              updateTable={handleUpdateTable}
               tableRef={tableRef}
               session={session}
               loadingTable={false}
@@ -317,6 +319,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
             <ClassroomList
               classList={classesInProgress}
               tableRef={tableRef}
+              updateTable={handleUpdateTable}
               session={session}
               loadingTable={false}
             />
@@ -328,6 +331,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
             <ClassroomList
               classList={completedClasses}
               tableRef={tableRef}
+              updateTable={handleUpdateTable}
               session={session}
               loadingTable={false}
             />
@@ -338,6 +342,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
           classList={listclass}
           showActions={true}
           action={true}
+          updateTable={handleUpdateTable}
           tableRef={tableRef}
           session={session}
           loadingTable={false}

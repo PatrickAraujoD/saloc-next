@@ -44,6 +44,7 @@ interface TableProps {
   session: SessionProps | null
   loadingTable: boolean
   showActions?: boolean
+  updateTable?: () => Promise<void>
 }
 
 const headersTableKeys = [
@@ -65,6 +66,7 @@ export function ClassroomList({
   classList = [],
   tableRef,
   loadingTable,
+  updateTable,
   session,
   showActions,
 }: TableProps) {
@@ -93,13 +95,9 @@ export function ClassroomList({
       { headers: { Authorization: 'Bearer ' + token } },
     )
 
-    const responseClass = await api.post('/class/list', {
-      valueCourse: classList[0].class.course.id,
-      period: classList[0].class.period.id,
-      idSector: session?.user.sector.id,
-    })
-
-    setClasses(responseClass.data)
+    if (updateTable) {
+      await updateTable()
+    }
   }
 
   const formatRoomBlock = (scheduleComplet: string) => {
@@ -150,16 +148,6 @@ export function ClassroomList({
     }
   }
 
-  const handleOpenModal = (idRequest: number) => {
-    setSelectedRequestId(idRequest)
-    setIsModalOpen(true)
-  }
-
-  const handleOpenSendModal = (idRequest: number) => {
-    setSelectedRequestId(idRequest)
-    setIsModalOpenSendRequest(true)
-  }
-
   const handleSendRequestModal = (idClass: number) => {
     setSelectedClass(idClass)
     setIsModalOpenSendRequest(true)
@@ -188,8 +176,10 @@ export function ClassroomList({
         headers: { Authorization: 'Bearer ' + token },
       },
     )
-    setMessage(response.data)
-    handleCloseModalSendRequest()
+    if (updateTable) {
+      await updateTable()
+    }
+    handleCloseModal()
   }
 
   const handleAcceptSelectedRequests = async () => {
@@ -204,13 +194,9 @@ export function ClassroomList({
         },
       )
 
-      const responseClass = await api.post('/class/list', {
-        valueCourse: classList[0].class.course.id,
-        period: classList[0].class.period.id,
-        idSector: session?.user.sector.id,
-      })
-
-      setClasses(responseClass.data)
+      if (updateTable) {
+        await updateTable()
+      }
 
       setMessage(response.data)
       setSelectedRequests([])
@@ -235,9 +221,14 @@ export function ClassroomList({
         headers: { Authorization: 'Bearer ' + token },
       },
     )
+    if (updateTable) {
+      await updateTable()
+    }
     setMessage(response.data)
     handleCloseModalSendRequest()
   }
+
+  console.log(selectedRequests)
 
   return (
     <div className="overflow-x-auto mb-10">
@@ -297,6 +288,7 @@ export function ClassroomList({
                       <Input
                         type="checkbox"
                         typeInput="checkbox"
+                        checked={true}
                         onChange={(e) => {
                           !session.user.course && classData.request
                             ? handleSelectClassesAndRequests(

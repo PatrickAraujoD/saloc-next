@@ -288,7 +288,6 @@ export function ClassroomList({
                       <Input
                         type="checkbox"
                         typeInput="checkbox"
-                        checked={true}
                         onChange={(e) => {
                           !session.user.course && classData.request
                             ? handleSelectClassesAndRequests(
@@ -346,7 +345,7 @@ export function ClassroomList({
                       })
                       .join(' / ')}
                   />
-                  {action && session?.user.sector.course ? (
+                  {action ? (
                     <td className="border-2 border-black">
                       <a
                         href={`alocar-turma/${classData.class.id}/${classData.request ? classData.request.schedule : classData.class.classSchedule}`}

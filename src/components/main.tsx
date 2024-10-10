@@ -13,7 +13,6 @@ import { api } from '@/services/api'
 import { SessionProps, Teacher } from '@/types/index'
 import usePdfGenerator from '@/hooks/use-pdf-generator'
 import Menu from '@/app/home/components/menu'
-import { headers } from 'next/headers'
 
 interface Course {
   id: number
@@ -155,27 +154,37 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
   }
 
   const handleUpdateTable = async () => {
-    let idSector: number | null = null
     let body: any = {}
 
-    if (session) {
-      idSector = session.user.sector?.id
+    const idSector = session?.user.sector?.id
+    console.log(session)
 
-      if (idSector) {
-        body = {
-          valueCourse,
-          period,
-          teacher: teacherId,
-          discipline: disciplineId,
-          idSector,
-        }
-      } else {
-        const course = session.user.sector?.course
-        body = {
-          valueCourse: course,
-          period,
-        }
+    body = {
+      valueCourse,
+      period,
+      teacher: teacherId,
+      discipline: disciplineId,
+    }
+
+    if (idSector && !session?.user.sector.course) {
+      body = {
+        valueCourse,
+        period,
+        teacher: teacherId,
+        discipline: disciplineId,
+        idSector,
       }
+
+      console.log(body)
+      console.log('jfdhjfhdfj')
+    } else if (session?.user.sector.course) {
+      console.log('TO NO IF ELSE')
+      const course = session?.user.sector?.course
+      body = {
+        valueCourse: course,
+        period,
+      }
+      console.log('jfdhjfhdfj')
     }
 
     try {
@@ -185,6 +194,8 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
       const hasNoSession = !session
 
       if (isCourseUndefined || isAdmin || hasNoSession) {
+        console.log('kfjkfjkdfjk')
+        console.log(body)
         response = await api.post('/class/list', body)
         setListClass(response.data)
       } else {
@@ -341,7 +352,6 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
         <ClassroomList
           classList={listclass}
           showActions={true}
-          action={true}
           updateTable={handleUpdateTable}
           tableRef={tableRef}
           session={session}

@@ -174,17 +174,12 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
         discipline: disciplineId,
         idSector,
       }
-
-      console.log(body)
-      console.log('jfdhjfhdfj')
-    } else if (session?.user.sector.course) {
-      console.log('TO NO IF ELSE')
+    } else if (session?.user.sector?.course) {
       const course = session?.user.sector?.course
       body = {
         valueCourse: course,
         period,
       }
-      console.log('jfdhjfhdfj')
     }
 
     try {
@@ -194,8 +189,6 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
       const hasNoSession = !session
 
       if (isCourseUndefined || isAdmin || hasNoSession) {
-        console.log('kfjkfjkdfjk')
-        console.log(body)
         response = await api.post('/class/list', body)
         setListClass(response.data)
       } else {

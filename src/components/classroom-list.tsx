@@ -82,6 +82,8 @@ export function ClassroomList({
     SelectedClassesProps[]
   >([])
   const [message, setMessage] = useState('')
+  const [isError, SetIsError] = useState(false)
+  const [checkedItems, setCheckedItems] = useState<number[]>([])
   const token = session?.token
   const origin = session?.user.sector?.id
 
@@ -126,6 +128,13 @@ export function ClassroomList({
     isChecked: boolean,
     requestId?: number,
   ) => {
+    setCheckedItems((prevCheckedItems) => {
+      if (isChecked) {
+        return [...prevCheckedItems, classe.id]
+      } else {
+        return prevCheckedItems.filter((itemId) => itemId !== classe.id)
+      }
+    })
     setSelectedClasses((prevSelected) => {
       if (isChecked) {
         return [...prevSelected, classe]
@@ -135,6 +144,7 @@ export function ClassroomList({
         )
       }
     })
+
     if (requestId) {
       setSelectedRequests((prevSelected) => {
         if (isChecked) {
@@ -166,18 +176,25 @@ export function ClassroomList({
     classes: SelectedClassesProps[],
     destination: number,
   ) => {
-    const response = await api.post(
-      '/request/send_all',
-      {
-        destination,
-        classes,
-      },
-      {
-        headers: { Authorization: 'Bearer ' + token },
-      },
-    )
-    if (updateTable) {
-      await updateTable()
+    try {
+      const response = await api.post(
+        '/request/send_all',
+        {
+          destination,
+          classes,
+        },
+        {
+          headers: { Authorization: 'Bearer ' + token },
+        },
+      )
+      if (updateTable) {
+        await updateTable()
+      }
+      SetIsError(false)
+      setCheckedItems([])
+    } catch (error: any) {
+      setMessage(error.response.data.error)
+      SetIsError(true)
     }
     handleCloseModal()
   }
@@ -228,18 +245,18 @@ export function ClassroomList({
     handleCloseModalSendRequest()
   }
 
-  console.log(selectedRequests)
-
   return (
     <div className="overflow-x-auto mb-10">
       {message && (
         <div className="text-xl uppercase font-bold mb-4 flex justify-between items-center">
-          <p>{message}</p>
+          <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
+            {message}
+          </p>
           <Button
             isButtonDisabled={false}
             title="x"
             type="button"
-            className="flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-9 h-9bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950"
+            className={`flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'} `}
             onClick={() => setMessage('')}
           />
         </div>
@@ -288,6 +305,7 @@ export function ClassroomList({
                       <Input
                         type="checkbox"
                         typeInput="checkbox"
+                        checked={checkedItems.includes(classData.class.id)}
                         onChange={(e) => {
                           !session.user.course && classData.request
                             ? handleSelectClassesAndRequests(

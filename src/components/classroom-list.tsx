@@ -192,6 +192,7 @@ export function ClassroomList({
       }
       SetIsError(false)
       setCheckedItems([])
+      setSelectedClasses([])
     } catch (error: any) {
       setMessage(error.response.data.error)
       SetIsError(true)
@@ -217,6 +218,7 @@ export function ClassroomList({
 
       setMessage(response.data)
       setSelectedRequests([])
+      setCheckedItems([])
     } catch (error) {
       setMessage('Ocorreu algum erro no momento de aceitar as solicitações')
     }

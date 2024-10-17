@@ -5,7 +5,6 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { FaHome } from 'react-icons/fa'
 import { GrFormPreviousLink } from 'react-icons/gr'
-import { Button } from '../button'
 import { IoMdLogIn, IoMdLogOut } from 'react-icons/io'
 import { SessionProps } from '@/types'
 import { signOut } from 'next-auth/react'
@@ -19,11 +18,12 @@ export function Header({ session }: HeaderProps) {
   const [isInternalNavigation, setIsInternalNavigation] = useState(true)
   const isLoggedIn = session !== null
   const pathname = usePathname()
-  const isLoginPage = pathname === '/home'
+  const isLoginPage = pathname !== '/login'
 
   async function logout() {
     await signOut({ redirect: false })
     window.location.reload()
+    router.push('/')
   }
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export function Header({ session }: HeaderProps) {
           <button
             onClick={handleBack}
             title="voltar"
-            className="flex items-center justify-center bg-white w-6 h-6 md:w-8 md:h-8 rounded-md hover:bg-blue-950 text-blue-950 hover:text-white border-2 border-transparent hover:border-white transition duration-300 ease-in-out"
+            className="hidden md:flex items-center justify-center bg-white w-6 h-6 md:w-8 md:h-8 rounded-md hover:bg-blue-950 text-blue-950 hover:text-white border-2 border-transparent hover:border-white transition duration-300 ease-in-out"
           >
             <GrFormPreviousLink size={20} />
           </button>
@@ -76,17 +76,13 @@ export function Header({ session }: HeaderProps) {
 
           {isLoginPage &&
             (isLoggedIn ? (
-              <Button
-                isButtonDisabled={false}
+              <button
                 onClick={logout}
-                className="flex items-center justify-center bg-white w-6 h-6 md:w-8 md:h-8 rounded-md hover:bg-blue-950 border-2 border-transparent hover:border-white transition duration-300 ease-in-out"
+                title="sair"
+                className="hidden md:flex items-center justify-center bg-white w-6 h-6 md:w-8 md:h-8 rounded-md hover:bg-blue-950 text-blue-950 hover:text-white border-2 border-transparent hover:border-white transition duration-300 ease-in-out"
               >
-                <IoMdLogOut
-                  size={20}
-                  className="text-blue-950 hover:text-white"
-                  title="sair"
-                />
-              </Button>
+                <IoMdLogOut size={20} />
+              </button>
             ) : (
               <Link
                 href="/login"

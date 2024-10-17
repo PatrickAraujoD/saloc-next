@@ -29,7 +29,6 @@ export function RecoverPasswordForm() {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    setIsLoading(true)
     setIsError(false)
 
     if (password !== confirmationPassword) {
@@ -38,9 +37,10 @@ export function RecoverPasswordForm() {
     } else {
       setMessageForm('')
     }
-
+    setIsLoading(true)
     try {
-      await api.post('/user/recover/password', {
+      await api.post('/user/reset_password', {
+        token: tokenValue,
         password,
         confirmationPassword,
       })
@@ -50,6 +50,7 @@ export function RecoverPasswordForm() {
       setMessage('Não foi possível atualizar a senha')
       setIsError(true)
     }
+    setIsLoading(false)
   }
 
   return (
@@ -106,7 +107,7 @@ export function RecoverPasswordForm() {
           required
         />
         {messageForm && (
-          <div className="flex lowercase text-red-700 items-center gap-1 mb-4">
+          <div className="flex lowercase mt-4 text-sm text-red-700 items-center gap-1">
             <IoInformationCircleSharp size={18} />
             {messageForm}
           </div>

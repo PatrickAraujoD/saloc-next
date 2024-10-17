@@ -51,7 +51,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
         ? scheduleRequest.join(',')
         : decodeURIComponent(scheduleRequest)
       const response = await api.post(
-        `/schedule/list/allocate/${idClass}`,
+        `/schedule/list/request/${idClass}`,
         {
           schedule: decodedScheduleRequest,
         },
@@ -96,6 +96,9 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
+    const decodedScheduleRequest = Array.isArray(scheduleRequest)
+      ? scheduleRequest.join(',')
+      : decodeURIComponent(scheduleRequest).replace('  ', ' ')
     try {
       await api.post(
         'class/allocate/register',
@@ -103,6 +106,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
           valueRoom,
           schedule,
           idClass,
+          scheduleSend: decodedScheduleRequest,
         },
         { headers: { Authorization: `Bearer ${token}` } },
       )

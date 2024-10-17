@@ -51,7 +51,7 @@ export function SendAllRequest({
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
       <div className="flex flex-col bg-white p-4 rounded-lg w-96 h-64 text-center justify-center items-center gap-y-2 ">
         {message}
         <Select

@@ -81,7 +81,7 @@ export function SendRequestModal({
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
       <div className="flex flex-col bg-white rounded-lg w-96 h-96 px-8 gap-y-4">
         <h1 className="uppercase font-bold text-center mt-6">
           Enviar Solicitação

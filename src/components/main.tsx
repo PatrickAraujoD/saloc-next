@@ -1,8 +1,10 @@
 'use client'
 import { Button } from '@/components/button'
 import { Select } from '@/components/select'
+import jsPDF from 'jspdf'
+import autoTable, { UserOptions } from 'jspdf-autotable'
 import { ChangeEvent, useEffect, useState } from 'react'
-import { ClassroomList } from './classroom-list'
+import { ClassComplet, ClassroomList } from './classroom-list'
 import {
   getCourses,
   listDiscipline,
@@ -46,9 +48,9 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
   const [isError, setIsError] = useState(false)
   const [listDisciplines, setListDisciplines] = useState([])
   const [listclass, setListClass] = useState([])
-  const [classesInProgress, setClassesInProgress] = useState([])
-  const [classesNotSent, setClassesNotSent] = useState([])
-  const [completedClasses, setCompletedClasses] = useState([])
+  const [classesInProgress, setClassesInProgress] = useState<ClassComplet[]>([])
+  const [classesNotSent, setClassesNotSent] = useState<ClassComplet[]>([])
+  const [completedClasses, setCompletedClasses] = useState<ClassComplet[]>([])
   const token = session?.token
 
   function captureValueCourse(event: ChangeEvent<HTMLSelectElement>) {
@@ -157,7 +159,6 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
     let body: any = {}
 
     const idSector = session?.user.sector?.id
-    console.log(session)
 
     body = {
       valueCourse,
@@ -205,6 +206,157 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
     }
   }
 
+  const formatRoomBlock = (scheduleComplet: string) => {
+    console.log(scheduleComplet)
+    const [days] = scheduleComplet.split(/[MTN]/)
+    if (days.length === 1) {
+      const dayMapping: { [key: string]: string } = {
+        '2': 'SEG',
+        '3': 'TER',
+        '4': 'QUA',
+        '5': 'QUI',
+        '6': 'SEX',
+        '7': 'SAB',
+      }
+
+      return dayMapping[days] || 'N/A'
+    }
+    return null
+  }
+
+
+  const generatePDF = () => {
+    const courseName = session?.user.course?.name
+    const imagePath = '/logo-saloc.png';
+
+    const options = {
+      filename: `${courseName}`,
+      margin: { top: 10, right: 10, bottom: 10, left: 10 },
+      jsPDFOptions: {
+        unit: 'mm' as const,
+        format: 'a4' as const,
+        orientation: 'landscape' as const,
+      },
+    }
+
+    // eslint-disable-next-line new-cap
+    const doc = new jsPDF({
+      unit: options.jsPDFOptions.unit,
+      format: options.jsPDFOptions.format,
+      orientation: options.jsPDFOptions.orientation,
+    })
+  
+    doc.setFontSize(12)
+    const styles: Partial<UserOptions['styles']> = {
+      halign: 'center',
+      valign: 'middle',
+      cellPadding: 2,
+      lineWidth: 0.5,
+      lineColor: [0, 0, 0],
+      cellWidth: 'auto',
+      overflow: 'linebreak',
+    }
+    const selectSemester = selectSemesterRef.current
+    let semester = null
+    if (selectSemester) {
+      semester = selectSemester.options[selectSemester.selectedIndex].text
+    }
+    doc.setFont('helvetica', 'bold')
+    
+    if(courseName){
+      doc.text("CURSO: " + courseName, 14, 16)
+    }
+
+    if (semester) {
+      doc.text("PERIODO: " + semester, 247.8, 16)
+    }
+    doc.setFont('helvetica', 'normal')
+    const img = new Image();
+    img.src = imagePath;
+
+    img.onload = () => {
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      const imgWidth = 50
+      const imgHeight = (img.height / img.width) * imgWidth;
+      const x = pageWidth - imgWidth - options.margin.right - 4
+      const y = pageHeight - imgHeight - options.margin.bottom + 9
+
+      const onHeadTable = () => {
+        return [
+          [
+            'PERIODO',
+            'CÓDIGO',
+            'NOME DISCIPLINA',
+            'DEPARTAMENTO',
+            'NUMERO DA TURMA',
+            'HORÁRIO',
+            'QUANTIDADE DE ALUNOS',
+            'DOCENTE',
+            'LOCAL',
+          ],
+        ]
+      }
+
+      const onBodyTable = (classe: ClassComplet[]) => {
+        return classe.map((cls) => [
+          cls.class.discipline.period.trim(),
+          cls.class.discipline.code.trim(),
+          cls.class.discipline.name.trim(),
+          cls.class.discipline.departament.trim(),
+          cls.class.numberOfClass.trim(),
+          cls.class.classSchedule.trim(),
+          String(cls.class.numberOfStudents).trim(),
+          cls.teacher.map((t) => t.name).join(' / '),
+          cls.room.map((r) => {
+            const room = r.room ?? {}
+            const day = formatRoomBlock(r.schedule)
+            const formattedRoomBlock =
+              room.building === 'CCET'
+                ? `${'B' + room.block || ''}`
+                : room.block || ''
+
+            if (day) {
+              return `${day} - ${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
+            } else {
+              return `${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
+            }
+          })
+          .join(' / '),
+        ])
+      }
+
+      const renderTableOrMessage = (classList: ClassComplet[], title: string) => {
+        doc.text(title, 14, 24);
+        if (classList.length === 0) {
+          doc.text('Nenhuma turma disponível', 14, 30);
+          doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight);
+        } else {
+          autoTable(doc, {
+            styles,
+            head: onHeadTable(),
+            body: onBodyTable(classList),
+            startY: 30,
+            didDrawPage: onDidDrawPage,
+          });
+        }
+      }
+
+      const onDidDrawPage = () => {
+        doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight);
+      };
+
+      renderTableOrMessage(classesNotSent, 'TURMAS QUE AINDA NÃO FORAM ENVIADAS');
+      doc.addPage();
+      renderTableOrMessage(classesInProgress, 'TURMAS QUE ESTÃO EM PROGRESSO');
+      doc.addPage();
+      renderTableOrMessage(completedClasses, 'TURMAS FINALIZADAS');
+
+      doc.save(`${options.filename}.pdf`)
+    }
+  }
+
   useEffect(() => {
     if (valueCourse) {
       fetchDiscipline(valueCourse)
@@ -230,14 +382,25 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
           />
         </div>
       )}
-      <Menu
-        generatePdfReport={generatePdfReport}
-        isButtonDisabled={isButtonDisabled}
-        period={period}
-        session={session}
-        valueCourse={valueCourse}
-      />
-
+      {
+        session?.user.sector.course ? (
+          <Menu
+            generatePdfClassSections={generatePDF}
+            isButtonDisabled={isButtonDisabled}
+            period={period}
+            session={session}
+            valueCourse={valueCourse}
+          />
+        ) : (
+          <Menu
+            generatePdfReport={generatePdfReport}
+            isButtonDisabled={isButtonDisabled}
+            period={period}
+            session={session}
+            valueCourse={valueCourse}
+          />
+        )
+      }
       <form className="mb-10" onSubmit={handleSubmit}>
         <Select
           name="period"

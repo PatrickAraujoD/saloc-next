@@ -11,10 +11,11 @@ export interface MenuProps {
   period: number | null
   valueCourse: number | null
   isButtonDisabled: boolean
-  generatePdfReport: (
+  generatePdfReport?: (
     reportType: 'room' | 'course',
     providedCourse?: string,
   ) => void
+  generatePdfClassSections?: () => void
 }
 
 export default function Menu({
@@ -23,6 +24,7 @@ export default function Menu({
   valueCourse,
   isButtonDisabled,
   generatePdfReport,
+  generatePdfClassSections,
 }: MenuProps) {
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
@@ -67,10 +69,17 @@ export default function Menu({
             title="relatório"
             className="bg-transparent border-transparent w-full"
             onClick={() => {
-              if (session?.user.course) {
-                generatePdfReport('course', session?.user.course.name)
+              if (session?.user.sector.course && generatePdfClassSections) {
+                generatePdfClassSections()
               } else {
-                generatePdfReport('course')
+                console.log('dsjdhsjd')
+                if (generatePdfReport) {
+                  if (session?.user.course) {
+                    generatePdfReport('course', session?.user.course.name)
+                  } else {
+                    generatePdfReport('course')
+                  }
+                }
               }
             }}
           />
@@ -140,10 +149,17 @@ export default function Menu({
           type="button"
           className="sm:h-16 xl:h-12"
           onClick={() => {
-            if (session?.user.course) {
-              generatePdfReport('course', session?.user.course.name)
+            if (session?.user.sector.course && generatePdfClassSections) {
+              generatePdfClassSections()
             } else {
-              generatePdfReport('course')
+              console.log('dsjdhsjd')
+              if (generatePdfReport) {
+                if (session?.user.course) {
+                  generatePdfReport('course', session?.user.course.name)
+                } else {
+                  generatePdfReport('course')
+                }
+              }
             }
           }}
         />

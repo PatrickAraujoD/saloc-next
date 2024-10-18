@@ -29,7 +29,7 @@ interface RoomList {
   schedule: string
 }
 
-interface ClassComplet {
+export interface ClassComplet {
   id: number
   class: Class
   teacher: Teacher[]
@@ -102,7 +102,8 @@ export function ClassroomList({
     }
   }
 
-  const formatRoomBlock = (scheduleComplet: string) => {
+  const formatRoomBlock = (scheduleComplet: string, name: string) => {
+    console.log(scheduleComplet, name)
     const [days] = scheduleComplet.split(/[MTN]/)
     if (days.length === 1) {
       const dayMapping: { [key: string]: string } = {
@@ -113,6 +114,8 @@ export function ClassroomList({
         '6': 'SEX',
         '7': 'SAB',
       }
+
+      console.log(scheduleComplet, dayMapping[days], name )
 
       return dayMapping[days] || 'N/A'
     }
@@ -348,22 +351,17 @@ export function ClassroomList({
                     content={classData.teacher.map((t) => t.name).join(' / ')}
                   />
                   <Td
-                    content={classData.room
-                      .map((r) => {
-                        const room = r.room ?? {}
-                        const day = formatRoomBlock(r.schedule)
-                        const formattedRoomBlock =
-                          room.building === 'CCET'
-                            ? `${'B' + room.block || ''}`
-                            : room.block || ''
-
-                        if (day) {
-                          return `${day} - ${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
-                        } else {
-                          return `${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
-                        }
-                      })
-                      .join(' / ')}
+                    content={classData.room.map((r) => {
+                      const room = r.room ?? {};
+                      const day = formatRoomBlock(r.schedule, classData.class.discipline.name);
+                      const formattedRoomBlock = room.building === 'CCET' ? `${'B' + room.block || ''}` : room.block || '';
+                    
+                      if (day) {
+                        return `${day} - ${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`;
+                      } else {
+                        return `${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`;
+                      }
+                    }).join(' / ')}
                   />
                   {action ? (
                     <td className="border-2 border-black">

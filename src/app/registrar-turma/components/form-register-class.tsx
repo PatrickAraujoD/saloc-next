@@ -87,8 +87,8 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
       })
       setMessage(response.data.message)
       setIsError(false)
-    } catch (error) {
-      setMessage(`Falha ao salvar a turma`)
+    } catch (error: any) {
+      setMessage(error.response.data.error)
       setIsError(true)
     }
 

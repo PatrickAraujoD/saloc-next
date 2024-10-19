@@ -14,7 +14,7 @@ export function Input({ nameLabel, name, typeInput, ...input }: InputProps) {
         htmlFor={name}
         className={`uppercase font-semibold text-blue-950 ${typeInput === 'checkbox' ? 'hidden' : 'text-start w-full'}`}
       >
-        {nameLabel}:
+        {nameLabel}
       </label>
       <input
         name={name}

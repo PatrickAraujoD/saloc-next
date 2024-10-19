@@ -11,6 +11,7 @@ interface SendRequestModalProps {
   onConfirm: (schedule: string, destination: number) => void
   idClass?: number | null
   session: SessionProps | null
+  scheduleValue?: string
 }
 
 interface SchedulesProps {
@@ -24,6 +25,7 @@ export function SendRequestModal({
   onClose,
   onConfirm,
   idClass,
+  scheduleValue,
   session,
 }: SendRequestModalProps) {
   const [schedules, setSchedules] = useState<SchedulesProps[]>([])
@@ -36,7 +38,9 @@ export function SendRequestModal({
     try {
       const response = await api.post(
         `/schedule/list/request/${idClass}`,
-        {},
+        {
+          schedule: scheduleValue,
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         },

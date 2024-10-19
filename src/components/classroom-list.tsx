@@ -47,6 +47,11 @@ interface TableProps {
   updateTable?: () => Promise<void>
 }
 
+interface SelectedClasse {
+  idClass: number
+  scheduleValue: string
+}
+
 const headersTableKeys = [
   'envios',
   'periodo',
@@ -77,7 +82,7 @@ export function ClassroomList({
     null,
   )
   const [selectedRequests, setSelectedRequests] = useState<number[]>([])
-  const [selectedClass, setSelectedClass] = useState<number | null>()
+  const [selectedClass, setSelectedClass] = useState<SelectedClasse | null>()
   const [selectedClasses, setSelectedClasses] = useState<
     SelectedClassesProps[]
   >([])
@@ -103,7 +108,6 @@ export function ClassroomList({
   }
 
   const formatRoomBlock = (scheduleComplet: string, name: string) => {
-    console.log(scheduleComplet, name)
     const [days] = scheduleComplet.split(/[MTN]/)
     if (days.length === 1) {
       const dayMapping: { [key: string]: string } = {
@@ -114,8 +118,6 @@ export function ClassroomList({
         '6': 'SEX',
         '7': 'SAB',
       }
-
-      console.log(scheduleComplet, dayMapping[days], name )
 
       return dayMapping[days] || 'N/A'
     }
@@ -133,8 +135,14 @@ export function ClassroomList({
   ) => {
     setCheckedItems((prevCheckedItems) => {
       if (isChecked) {
+        if (!session?.user.sector?.course && requestId) {
+          return [...prevCheckedItems, requestId]
+        }
         return [...prevCheckedItems, classe.id]
       } else {
+        if (!session?.user.sector?.course && requestId) {
+          return prevCheckedItems.filter((itemId) => itemId !== requestId)
+        }
         return prevCheckedItems.filter((itemId) => itemId !== classe.id)
       }
     })
@@ -161,8 +169,8 @@ export function ClassroomList({
     }
   }
 
-  const handleSendRequestModal = (idClass: number) => {
-    setSelectedClass(idClass)
+  const handleSendRequestModal = (idClass: number, scheduleValue: string) => {
+    setSelectedClass({ idClass, scheduleValue })
     setIsModalOpenSendRequest(true)
   }
 
@@ -227,6 +235,67 @@ export function ClassroomList({
     }
   }
 
+  function handleSelectAll(isChecked: boolean) {
+    setCheckedItems((prevCheckedItems) => {
+      if (isChecked) {
+        return [
+          ...prevCheckedItems,
+          ...classes.flatMap((classe) => {
+            if (!session?.user.sector.course && classe.request) {
+              return classe.request.id ? [classe.request.id] : []
+            }
+            return classe.class.id ? [classe.class.id] : []
+          }),
+        ]
+      } else {
+        return prevCheckedItems.filter(
+          (itemId) =>
+            !classes.some((classe) => {
+              if (!session?.user.sector.course && classe.request) {
+                return classe.request.id === itemId
+              }
+              return classe.class.id === itemId
+            }),
+        )
+      }
+    })
+
+    setSelectedClasses((prevSelected) => {
+      if (isChecked && session?.user.sector.course) {
+        return [
+          ...prevSelected,
+          ...classes.map((classe) => ({
+            id: classe.class.id,
+            schedule: classe.class.classSchedule,
+          })),
+        ]
+      } else {
+        return prevSelected.filter(
+          (classExists: SelectedClassesProps) =>
+            !classes.some((classe) => classe.class.id === classExists.id),
+        )
+      }
+    })
+
+    if (!session?.user.sector.course) {
+      setSelectedRequests((prevSelected) => {
+        if (isChecked) {
+          return [
+            ...prevSelected,
+            ...classes
+              .filter((classe) => classe.request)
+              .map((classe) => classe.request!.id),
+          ]
+        } else {
+          return prevSelected.filter(
+            (requestPrevId) =>
+              !classes.some((classe) => classe.request?.id === requestPrevId),
+          )
+        }
+      })
+    }
+  }
+
   const handleConfirmSendModal = async (
     schedule: string,
     destination: number,
@@ -237,7 +306,7 @@ export function ClassroomList({
         destination,
         schedule,
         origin,
-        idClass: selectedClass,
+        idClass: selectedClass?.idClass,
       },
       {
         headers: { Authorization: 'Bearer ' + token },
@@ -268,6 +337,42 @@ export function ClassroomList({
       )}
       {classes?.length > 0 ? (
         <div className="overflow-auto">
+          {session?.user.sector && showActions && (
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  id="selectAll"
+                  className="mr-3 h-4 w-4"
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                />
+                <label
+                  htmlFor="selectAll"
+                  className="text-blue-950 uppercase font-bold"
+                >
+                  Selecionar todas as turmas
+                </label>
+              </div>
+              <div>
+                <Button
+                  isButtonDisabled={false}
+                  type="button"
+                  title="enviar selecionadas"
+                  className={`text-sm ${!session?.user.sector.course ? 'mr-4' : ''}`}
+                  onClick={() => setIsModalOpen(true)}
+                />
+                {!session?.user.sector.course && (
+                  <Button
+                    isButtonDisabled={false}
+                    type="button"
+                    title="aceitar solicitações"
+                    className="text-sm"
+                    onClick={() => handleAcceptSelectedRequests()}
+                  />
+                )}
+              </div>
+            </div>
+          )}
           <table
             className="table-zebra-zebra table border-collapse"
             ref={tableRef}
@@ -310,7 +415,9 @@ export function ClassroomList({
                       <Input
                         type="checkbox"
                         typeInput="checkbox"
-                        checked={checkedItems.includes(classData.class.id)}
+                        checked={checkedItems.includes(
+                          classData.request?.id ?? classData.class.id,
+                        )}
                         onChange={(e) => {
                           !session.user.course && classData.request
                             ? handleSelectClassesAndRequests(
@@ -351,17 +458,25 @@ export function ClassroomList({
                     content={classData.teacher.map((t) => t.name).join(' / ')}
                   />
                   <Td
-                    content={classData.room.map((r) => {
-                      const room = r.room ?? {};
-                      const day = formatRoomBlock(r.schedule, classData.class.discipline.name);
-                      const formattedRoomBlock = room.building === 'CCET' ? `${'B' + room.block || ''}` : room.block || '';
-                    
-                      if (day) {
-                        return `${day} - ${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`;
-                      } else {
-                        return `${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`;
-                      }
-                    }).join(' / ')}
+                    content={classData.room
+                      .map((r) => {
+                        const room = r.room ?? {}
+                        const day = formatRoomBlock(
+                          r.schedule,
+                          classData.class.discipline.name,
+                        )
+                        const formattedRoomBlock =
+                          room.building === 'CCET'
+                            ? `${'B' + room.block || ''}`
+                            : room.block || ''
+
+                        if (day) {
+                          return `${day} - ${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
+                        } else {
+                          return `${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
+                        }
+                      })
+                      .join(' / ')}
                   />
                   {action ? (
                     <td className="border-2 border-black">
@@ -392,7 +507,10 @@ export function ClassroomList({
                           isButtonDisabled={false}
                           className="w-7 h-7 flex items-center justify-center"
                           onClick={() => {
-                            handleSendRequestModal(classData.class.id)
+                            handleSendRequestModal(
+                              classData.class.id,
+                              classData.request?.schedule || '',
+                            )
                           }}
                         >
                           <MdOutlineArrowForward size={20} />
@@ -407,7 +525,10 @@ export function ClassroomList({
                           isButtonDisabled={false}
                           className="w-7 h-7"
                           onClick={() => {
-                            handleSendRequestModal(classData.class.id)
+                            handleSendRequestModal(
+                              classData.class.id,
+                              classData.request?.schedule || '',
+                            )
                           }}
                         >
                           <MdOutlineArrowForward size={24} />
@@ -419,26 +540,6 @@ export function ClassroomList({
               ))}
             </tbody>
           </table>
-          {session?.user.sector && showActions && (
-            <div>
-              <Button
-                isButtonDisabled={false}
-                type="button"
-                title="enviar selecionadas"
-                className="mt-4 text-sm mr-4"
-                onClick={() => setIsModalOpen(true)}
-              />
-              {!session?.user.sector.course && (
-                <Button
-                  isButtonDisabled={false}
-                  type="button"
-                  title="aceitar solicitações"
-                  className="mt-4 text-sm"
-                  onClick={() => handleAcceptSelectedRequests()}
-                />
-              )}
-            </div>
-          )}
         </div>
       ) : loadingTable ? (
         <table className="table border-collapse" ref={tableRef}>
@@ -478,7 +579,8 @@ export function ClassroomList({
         isOpen={isModalOpenSendRequest}
         onClose={handleCloseModalSendRequest}
         onConfirm={handleConfirmSendModal}
-        idClass={selectedClass}
+        idClass={selectedClass?.idClass}
+        scheduleValue={selectedClass?.scheduleValue}
         session={session}
       />
     </div>

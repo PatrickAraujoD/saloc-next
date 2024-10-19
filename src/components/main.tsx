@@ -224,10 +224,9 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
     return null
   }
 
-
   const generatePDF = () => {
     const courseName = session?.user.course?.name
-    const imagePath = '/logo-saloc.png';
+    const imagePath = '/logo-saloc.png'
 
     const options = {
       filename: `${courseName}`,
@@ -245,7 +244,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
       format: options.jsPDFOptions.format,
       orientation: options.jsPDFOptions.orientation,
     })
-  
+
     doc.setFontSize(12)
     const styles: Partial<UserOptions['styles']> = {
       halign: 'center',
@@ -262,24 +261,24 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
       semester = selectSemester.options[selectSemester.selectedIndex].text
     }
     doc.setFont('helvetica', 'bold')
-    
-    if(courseName){
-      doc.text("CURSO: " + courseName, 14, 16)
+
+    if (courseName) {
+      doc.text('CURSO: ' + courseName, 14, 16)
     }
 
     if (semester) {
-      doc.text("PERIODO: " + semester, 247.8, 16)
+      doc.text('PERIODO: ' + semester, 247.8, 16)
     }
     doc.setFont('helvetica', 'normal')
-    const img = new Image();
-    img.src = imagePath;
+    const img = new Image()
+    img.src = imagePath
 
     img.onload = () => {
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
 
       const imgWidth = 50
-      const imgHeight = (img.height / img.width) * imgWidth;
+      const imgHeight = (img.height / img.width) * imgWidth
       const x = pageWidth - imgWidth - options.margin.right - 4
       const y = pageHeight - imgHeight - options.margin.bottom + 9
 
@@ -301,37 +300,55 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
 
       const onBodyTable = (classe: ClassComplet[]) => {
         return classe.map((cls) => [
-          cls.class.discipline.period.trim(),
-          cls.class.discipline.code.trim(),
-          cls.class.discipline.name.trim(),
-          cls.class.discipline.departament.trim(),
-          cls.class.numberOfClass.trim(),
-          cls.class.classSchedule.trim(),
-          String(cls.class.numberOfStudents).trim(),
+          cls.class.discipline.period
+            ? cls.class.discipline.period.trim()
+            : cls.class.discipline.period,
+          cls.class.discipline.code
+            ? cls.class.discipline.code.trim()
+            : cls.class.discipline.code,
+          cls.class.discipline.name
+            ? cls.class.discipline.name.trim()
+            : cls.class.discipline.name,
+          cls.class.discipline.departament
+            ? cls.class.discipline.departament.trim()
+            : cls.class.discipline.departament,
+          cls.class.numberOfClass
+            ? cls.class.numberOfClass.trim()
+            : cls.class.numberOfClass,
+          cls.class.classSchedule
+            ? cls.class.classSchedule.trim()
+            : cls.class.classSchedule,
+          cls.class.numberOfStudents
+            ? String(cls.class.numberOfStudents).trim()
+            : cls.class.numberOfStudents,
           cls.teacher.map((t) => t.name).join(' / '),
-          cls.room.map((r) => {
-            const room = r.room ?? {}
-            const day = formatRoomBlock(r.schedule)
-            const formattedRoomBlock =
-              room.building === 'CCET'
-                ? `${'B' + room.block || ''}`
-                : room.block || ''
+          cls.room
+            .map((r) => {
+              const room = r.room ?? {}
+              const day = formatRoomBlock(r.schedule)
+              const formattedRoomBlock =
+                room.building === 'CCET'
+                  ? `${'B' + room.block || ''}`
+                  : room.block || ''
 
-            if (day) {
-              return `${day} - ${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
-            } else {
-              return `${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
-            }
-          })
-          .join(' / '),
+              if (day) {
+                return `${day} - ${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
+              } else {
+                return `${room.number || ''} - ${room.building || ''} - ${formattedRoomBlock}`
+              }
+            })
+            .join(' / '),
         ])
       }
 
-      const renderTableOrMessage = (classList: ClassComplet[], title: string) => {
-        doc.text(title, 14, 24);
+      const renderTableOrMessage = (
+        classList: ClassComplet[],
+        title: string,
+      ) => {
+        doc.text(title, 14, 24)
         if (classList.length === 0) {
-          doc.text('Nenhuma turma disponível', 14, 30);
-          doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight);
+          doc.text('Nenhuma turma disponível', 14, 30)
+          doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight)
         } else {
           autoTable(doc, {
             styles,
@@ -339,19 +356,22 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
             body: onBodyTable(classList),
             startY: 30,
             didDrawPage: onDidDrawPage,
-          });
+          })
         }
       }
 
       const onDidDrawPage = () => {
-        doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight);
-      };
+        doc.addImage(img, 'PNG', x, y, imgWidth, imgHeight)
+      }
 
-      renderTableOrMessage(classesNotSent, 'TURMAS QUE AINDA NÃO FORAM ENVIADAS');
-      doc.addPage();
-      renderTableOrMessage(classesInProgress, 'TURMAS QUE ESTÃO EM PROGRESSO');
-      doc.addPage();
-      renderTableOrMessage(completedClasses, 'TURMAS FINALIZADAS');
+      renderTableOrMessage(
+        classesNotSent,
+        'TURMAS QUE AINDA NÃO FORAM ENVIADAS',
+      )
+      doc.addPage()
+      renderTableOrMessage(classesInProgress, 'TURMAS QUE ESTÃO EM PROGRESSO')
+      doc.addPage()
+      renderTableOrMessage(completedClasses, 'TURMAS FINALIZADAS')
 
       doc.save(`${options.filename}.pdf`)
     }
@@ -382,25 +402,23 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
           />
         </div>
       )}
-      {
-        session?.user.sector.course ? (
-          <Menu
-            generatePdfClassSections={generatePDF}
-            isButtonDisabled={isButtonDisabled}
-            period={period}
-            session={session}
-            valueCourse={valueCourse}
-          />
-        ) : (
-          <Menu
-            generatePdfReport={generatePdfReport}
-            isButtonDisabled={isButtonDisabled}
-            period={period}
-            session={session}
-            valueCourse={valueCourse}
-          />
-        )
-      }
+      {session?.user.sector.course ? (
+        <Menu
+          generatePdfClassSections={generatePDF}
+          isButtonDisabled={isButtonDisabled}
+          period={period}
+          session={session}
+          valueCourse={valueCourse}
+        />
+      ) : (
+        <Menu
+          generatePdfReport={generatePdfReport}
+          isButtonDisabled={isButtonDisabled}
+          period={period}
+          session={session}
+          valueCourse={valueCourse}
+        />
+      )}
       <form className="mb-10" onSubmit={handleSubmit}>
         <Select
           name="period"

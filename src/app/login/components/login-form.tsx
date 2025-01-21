@@ -5,6 +5,7 @@ import { api } from '@/services/api'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { ChangeEvent, FormEvent, SyntheticEvent, useState } from 'react'
+import { IoClose } from 'react-icons/io5'
 
 export function LoginForm() {
   const [email, setEmail] = useState('')
@@ -69,10 +70,13 @@ export function LoginForm() {
     <main className="flex-grow flex flex-col items-center justify-center p-4 relative">
       {isOpenPoupSendEmail && (
         <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50">
-          <form
-            onSubmit={handleSubmitEmailRecoverPassword}
-            className="bg-white p-6 rounded shadow-lg xl:w-96 flex flex-col items-center justify-center"
-          >
+          <div className="relative bg-white p-6 rounded shadow-lg xl:w-96 flex flex-col items-center justify-center">
+            <button
+              className="absolute right-3 top-3"
+              onClick={() => setIsOpenPoupSendEmail(false)}
+            >
+              <IoClose width={30} className="text-red-700" />
+            </button>
             <h2 className="text-blue-950 font-bold mb-4 text-center uppercase">
               Recuperar Senha
             </h2>
@@ -91,7 +95,7 @@ export function LoginForm() {
               isLoading={isLoading && isOpenPoupSendEmail}
               className="mt-10"
             />
-          </form>
+          </div>
         </div>
       )}
       {messageSendEmail && (

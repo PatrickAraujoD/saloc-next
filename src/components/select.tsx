@@ -10,6 +10,7 @@ interface BaseOption {
   block?: string
   schedule?: string
   schedule_complet?: boolean
+  capacity?: number
 }
 
 interface SelectProps<T extends BaseOption>
@@ -47,7 +48,7 @@ export function Select<T extends BaseOption>({
             if (option.type === 'room') {
               return (
                 <option key={option.id} value={option.id?.toString()}>
-                  {`${option.number} - ${option.sector} - ${option.sector === 'CCET' ? 'B' + option.block : option.block}`}
+                  {`${option.number} - ${option.sector} - ${option.sector === 'CCET' ? 'B' + option.block : option.block} - ${option.capacity ? option.capacity : 'Sem informação'}`}
                 </option>
               )
             } else if (option.type === 'schedule') {

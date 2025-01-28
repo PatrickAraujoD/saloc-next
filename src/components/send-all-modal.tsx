@@ -9,6 +9,7 @@ import { api } from '@/services/api'
 interface SendAllRequestProps {
   isOpen: boolean
   onClose: () => void
+  setIsCheckedAll: (checked: boolean) => void
   onConfirm: (classes: SelectedClassesProps[], destination: number) => void
   message: string
   classes: SelectedClassesProps[]
@@ -18,6 +19,7 @@ interface SendAllRequestProps {
 export function SendAllRequest({
   isOpen,
   onClose,
+  setIsCheckedAll,
   onConfirm,
   message,
   classes,
@@ -44,6 +46,11 @@ export function SendAllRequest({
 
   function handleCaptureDestination(event: ChangeEvent<HTMLSelectElement>) {
     setDestination(Number(event.target.value))
+  }
+
+  function handleOnConfirm() {
+    onConfirm(classes, destination)
+    setIsCheckedAll(false)
   }
 
   if (!isOpen) {
@@ -73,7 +80,7 @@ export function SendAllRequest({
             type="button"
             title="confirmar"
             className="uppercase bg-blue-950 text-white p-2 rounded font-light"
-            onClick={() => onConfirm(classes, destination)}
+            onClick={() => handleOnConfirm()}
           />
         </div>
       </div>

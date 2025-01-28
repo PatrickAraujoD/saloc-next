@@ -1,7 +1,7 @@
 import { Class, Room, SessionProps, Teacher } from '@/types'
 import { Td } from './td'
 import { Th } from './th'
-import { RefObject, useEffect, useState } from 'react'
+import { ChangeEvent, RefObject, useEffect, useState } from 'react'
 import { Button } from './button'
 import { api } from '@/services/api'
 import { SendAllRequest } from './send-all-modal'
@@ -88,6 +88,7 @@ export function ClassroomList({
   >([])
   const [message, setMessage] = useState('')
   const [isError, SetIsError] = useState(false)
+  const [isCheckedAll, setIsCheckedAll] = useState(false)
   const [checkedItems, setCheckedItems] = useState<number[]>([])
   const token = session?.token
   const origin = session?.user.sector?.id
@@ -230,6 +231,7 @@ export function ClassroomList({
       setMessage(response.data)
       setSelectedRequests([])
       setCheckedItems([])
+      setIsCheckedAll(false)
     } catch (error) {
       setMessage('Ocorreu algum erro no momento de aceitar as solicitações')
     }
@@ -296,6 +298,12 @@ export function ClassroomList({
     }
   }
 
+  const handleSetisCheckedAll = (event: ChangeEvent<HTMLInputElement>) => {
+    const isChecked = event.target.checked
+    setIsCheckedAll(isChecked)
+    handleSelectAll(isChecked)
+  }
+
   const handleConfirmSendModal = async (
     schedule: string,
     destination: number,
@@ -344,7 +352,8 @@ export function ClassroomList({
                   type="checkbox"
                   id="selectAll"
                   className="mr-3 h-4 w-4"
-                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  checked={isCheckedAll}
+                  onChange={(e) => handleSetisCheckedAll(e)}
                 />
                 <label
                   htmlFor="selectAll"
@@ -570,6 +579,7 @@ export function ClassroomList({
       <SendAllRequest
         isOpen={isModalOpen}
         classes={selectedClasses}
+        setIsCheckedAll={setIsCheckedAll}
         onClose={handleCloseModal}
         message="informe o setor que deseja enviar as solicitações"
         onConfirm={handleConfirmSendSelectedClasses}

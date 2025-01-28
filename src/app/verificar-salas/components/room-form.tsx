@@ -100,7 +100,7 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
         </div>
       )}
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col md:grid md:grid-cols-2 md:gap-x-36 mt-10">
+        <div className="flex flex-col md:grid md:grid-cols-2 md:gap-x-36 mt-10 mb-6">
           <Input
             nameLabel={'numero da sala *'}
             name={'numberOfRoom'}

@@ -149,7 +149,7 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
                   <Td content={room.capacity ? String(room.capacity) : ''} />
                   <Td content={room.block} />
                   <Td content={room.floor} />
-                  <td className="border-black border-2">
+                  <td className="border-black border-2 w-56 text-center">
                     <Button
                       isButtonDisabled={false}
                       type="button"

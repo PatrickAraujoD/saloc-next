@@ -1,8 +1,7 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import { Select } from './select'
-import { api } from '@/services/api'
 import { SessionProps } from '@/types'
-import { getSectores } from '@/services/http/get-sectores'
+import { getSectores, getScheduleRequestByIdClass } from '@/services/http'
 import { Button } from './button'
 
 interface SendRequestModalProps {
@@ -36,17 +35,13 @@ export function SendRequestModal({
 
   async function handleSearchSchedules() {
     try {
-      const response = await api.post(
-        `/schedule/list/request/${idClass}`,
-        {
-          schedule: scheduleValue,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
+      const response = await getScheduleRequestByIdClass({
+        idClass,
+        schedule: scheduleValue,
+        token,
+      })
 
-      setSchedules(response.data)
+      setSchedules(response)
     } catch (error) {
       console.error('Erro ao buscar horários:', error)
     }

@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
-import { api } from '@/services/api'
+import { sendEmail } from '@/services/http'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { ChangeEvent, FormEvent, SyntheticEvent, useState } from 'react'
@@ -31,10 +31,10 @@ export function LoginForm() {
     event.preventDefault()
     setIsLoading(true)
     try {
-      const response = await api.post('/user/send/email', {
+      const message = await sendEmail({
         email,
       })
-      setMessageSendEmail(response.data.message)
+      setMessageSendEmail(message)
       setIsError(false)
     } catch (error) {
       setMessageSendEmail('Não foi possível enviar o email de recuperação.')

@@ -3,12 +3,17 @@ import { Td } from './td'
 import { Th } from './th'
 import { ChangeEvent, RefObject, useEffect, useState } from 'react'
 import { Button } from './button'
-import { api } from '@/services/api'
 import { SendAllRequest } from './send-all-modal'
 import { SendRequestModal } from './send-request-modal'
 import { HiCheck } from 'react-icons/hi'
 import { MdOutlineArrowForward } from 'react-icons/md'
 import { Input } from './input'
+import {
+  updateStatus,
+  requestSendAll,
+  requestAcceptAll,
+  createRequest,
+} from '@/services/http'
 
 export interface SelectedClassesProps {
   id: number
@@ -94,14 +99,10 @@ export function ClassroomList({
   const origin = session?.user.sector?.id
 
   async function handleAcceptClass(idRequest: number) {
-    await api.post(
-      '/request/update_status',
-      {
-        id: idRequest,
-        status: 'aceita',
-      },
-      { headers: { Authorization: 'Bearer ' + token } },
-    )
+    await updateStatus({
+      idRequest,
+      token,
+    })
 
     if (updateTable) {
       await updateTable()
@@ -189,16 +190,11 @@ export function ClassroomList({
     destination: number,
   ) => {
     try {
-      const response = await api.post(
-        '/request/send_all',
-        {
-          destination,
-          classes,
-        },
-        {
-          headers: { Authorization: 'Bearer ' + token },
-        },
-      )
+      await requestSendAll({
+        destination,
+        classes,
+      })
+
       if (updateTable) {
         await updateTable()
       }
@@ -214,21 +210,16 @@ export function ClassroomList({
 
   const handleAcceptSelectedRequests = async () => {
     try {
-      const response = await api.post(
-        '/request/accept_all',
-        {
-          requests: selectedRequests,
-        },
-        {
-          headers: { Authorization: 'Bearer ' + token },
-        },
-      )
+      const response = await requestAcceptAll({
+        token,
+        requests: selectedRequests,
+      })
 
       if (updateTable) {
         await updateTable()
       }
 
-      setMessage(response.data)
+      setMessage(response)
       setSelectedRequests([])
       setCheckedItems([])
       setIsCheckedAll(false)
@@ -308,22 +299,18 @@ export function ClassroomList({
     schedule: string,
     destination: number,
   ) => {
-    const response = await api.post(
-      '/request/create',
-      {
-        destination,
-        schedule,
-        origin,
-        idClass: selectedClass?.idClass,
-      },
-      {
-        headers: { Authorization: 'Bearer ' + token },
-      },
-    )
+    const response = await createRequest({
+      destination,
+      schedule,
+      origin,
+      idClass: selectedClass?.idClass,
+      token,
+    })
+
     if (updateTable) {
       await updateTable()
     }
-    setMessage(response.data)
+    setMessage(response)
     handleCloseModalSendRequest()
   }
 

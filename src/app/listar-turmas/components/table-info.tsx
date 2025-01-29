@@ -1,7 +1,7 @@
 'use client'
 
 import { ClassroomList } from '@/components/classroom-list'
-import { api } from '@/services/api'
+import { getClassesWithAndWithoutRooms } from '@/services/http'
 import { SessionProps } from '@/types'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -22,7 +22,7 @@ export function TableInfo({ session }: TableInfo) {
   const [loadingTable, setLoadingTable] = useState<boolean>(true)
   const token = session.token
 
-  if (!period || !valueCourse || period === 'null') {
+  if (!period || !valueCourse || period === 'null' || valueCourse === 'null') {
     router.push('/')
   }
 
@@ -30,21 +30,13 @@ export function TableInfo({ session }: TableInfo) {
     async function fetchClass() {
       setLoadingTable(true)
       try {
-        const classes = await api.post(
-          '/class/list/with_and_without_rooms',
-          {
-            valueCourse,
-            period,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        )
+        const classes = await getClassesWithAndWithoutRooms({
+          valueCourse,
+          period,
+          token,
+        })
 
-        const response = classes.data
-        setList(response)
+        setList(classes)
       } catch (error) {
         console.error('Failed to fetch classes:', error)
       }

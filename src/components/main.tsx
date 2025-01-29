@@ -5,8 +5,13 @@ import jsPDF from 'jspdf'
 import autoTable, { UserOptions } from 'jspdf-autotable'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { ClassComplet, ClassroomList } from './classroom-list'
-import { getClassAll, listDiscipline, pushDataSigaa } from '@/services/http'
-import { api } from '@/services/api'
+import {
+  getClassAll,
+  listDiscipline,
+  pushDataSigaa,
+  allocateAutomatic,
+  getRequestClassProgress,
+} from '@/services/http'
 import { SessionProps, Teacher } from '@/types/index'
 import usePdfGenerator from '@/hooks/use-pdf-generator'
 import Menu from '@/app/home/components/menu'
@@ -122,17 +127,12 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
     setIsLoadingAllocateAutomatic(true)
     try {
       const idSector = session?.user.sector?.id
-      const response = await api.post(
-        'class/allocate/automatic',
-        {
-          id_period: period,
-          id_sector: idSector,
-        },
-        {
-          headers: { Authorization: 'Bearer ' + token },
-        },
-      )
-      setMessage(response.data.message)
+      const response = await allocateAutomatic({
+        idPeriod: period,
+        idSector,
+        token,
+      })
+      setMessage(response.message)
       setIsError(false)
     } catch (error) {
       setMessage('Falha ao importar dados do sigaa')
@@ -180,12 +180,14 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
         response = await getClassAll(body)
         setListClass(response.data)
       } else {
-        response = await api.post('/request/progress', body, {
-          headers: { Authorization: `Bearer ${token}` },
+        response = await getRequestClassProgress({
+          token,
+          body,
         })
-        setClassesInProgress(response.data.accepted_in_analysis)
-        setClassesNotSent(response.data.not_in_requests)
-        setCompletedClasses(response.data.allocated_classes)
+        const { acceptedInAnalysis, notInRequests, allocatedClasses } = response
+        setClassesInProgress(acceptedInAnalysis)
+        setClassesNotSent(notInRequests)
+        setCompletedClasses(allocatedClasses)
       }
     } catch (error) {
       setMessage('Servidor offline')

@@ -2,8 +2,7 @@
 import { Button } from '@/components/button'
 import { Select } from '@/components/select'
 import { api } from '@/services/api'
-import { listPeriod } from '@/services/http'
-import { getRooms } from '@/services/http/get_rooms'
+import { listPeriod, getRooms } from '@/services/http'
 import { Period, Room, SessionProps } from '@/types'
 import { ChangeEvent, RefObject, useEffect, useState } from 'react'
 

@@ -1,10 +1,9 @@
 'use client'
-import { getSectores } from '@/services/http/get-sectores'
+import { getSectores } from '@/services/http'
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import { Select } from './select'
 import { Button } from './button'
 import { SelectedClassesProps } from './classroom-list'
-import { api } from '@/services/api'
 
 interface SendAllRequestProps {
   isOpen: boolean

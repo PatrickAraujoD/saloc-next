@@ -1,3 +1,4 @@
+'use server'
 import { Room } from '@/types'
 import { api } from '../api'
 

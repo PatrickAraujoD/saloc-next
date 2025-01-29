@@ -1,3 +1,5 @@
+export { pushDataSigaa } from '@/services/http/push-data-sigaa'
+export { getClassAll } from '@/services/http/get-class-all'
 export { listDiscipline } from './list_discipline'
 export { listPeriod } from './list_period'
 export { listTeacher } from './list_teacher'

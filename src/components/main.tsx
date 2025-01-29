@@ -5,12 +5,7 @@ import jsPDF from 'jspdf'
 import autoTable, { UserOptions } from 'jspdf-autotable'
 import { ChangeEvent, useEffect, useState } from 'react'
 import { ClassComplet, ClassroomList } from './classroom-list'
-import {
-  getCourses,
-  listDiscipline,
-  listTeacher,
-  listPeriod,
-} from '@/services/http'
+import { getClassAll, listDiscipline, pushDataSigaa } from '@/services/http'
 import { api } from '@/services/api'
 import { SessionProps, Teacher } from '@/types/index'
 import usePdfGenerator from '@/hooks/use-pdf-generator'
@@ -112,15 +107,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
   async function importDataSigaa() {
     setIsLoadingButtonSigaa(true)
     try {
-      await api.post(
-        'class/import_sigaa',
-        {
-          id_period: period,
-        },
-        {
-          headers: { Authorization: 'Bearer ' + token },
-        },
-      )
+      await pushDataSigaa(period, token)
       setMessage('Dados carregados com sucesso!')
       setIsError(false)
     } catch (error) {
@@ -190,7 +177,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
       const hasNoSession = !session
 
       if (isCourseUndefined || isAdmin || hasNoSession) {
-        response = await api.post('/class/list', body)
+        response = await getClassAll(body)
         setListClass(response.data)
       } else {
         response = await api.post('/request/progress', body, {

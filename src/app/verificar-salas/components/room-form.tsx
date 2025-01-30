@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
-import { api } from '@/services/api'
+import { createRoom } from '@/services/http'
 import { Room, SessionProps } from '@/types'
 import axios from 'axios'
 import { ChangeEvent, useState } from 'react'
@@ -27,19 +27,15 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
     event.preventDefault()
 
     try {
-      const response = await api.post(
-        '/room/register',
-        {
-          number,
-          capacity,
-          block,
-          floor,
-          building,
-        },
-        { headers: { Authorization: `Bearer ${token}` } },
-      )
+      const response = await createRoom({
+        number,
+        capacity,
+        block,
+        floor,
+        building,
+      })
 
-      const newRoom = response.data.room as Room
+      const newRoom = response
       setMessage('Sala registrada com sucesso!')
 
       onRoomAdded(newRoom)

@@ -1,9 +1,9 @@
 'use client'
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
-import { api } from '@/services/api'
+import { recoverUserPassword } from '@/services/http'
 import { useRouter } from 'next/navigation'
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import { IoInformationCircleSharp } from 'react-icons/io5'
 
 export function RecoverPasswordForm() {
@@ -39,11 +39,12 @@ export function RecoverPasswordForm() {
     }
     setIsLoading(true)
     try {
-      await api.post('/user/reset_password', {
+      await recoverUserPassword({
         token: tokenValue,
         password,
         confirmationPassword,
       })
+
       setMessage('Senha atualizada com sucesso!')
       setIsError(false)
     } catch (error) {

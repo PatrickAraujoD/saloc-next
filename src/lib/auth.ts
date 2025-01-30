@@ -1,4 +1,4 @@
-import { api } from '@/services/api'
+import { loginUser } from '@/services/http/login-user'
 import { SessionProps } from '@/types'
 import { NextAuthOptions } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
@@ -13,7 +13,7 @@ export const nextAuthConfig: NextAuthOptions = {
       },
 
       async authorize(credential) {
-        const response = await api.post('/user/login', {
+        const response = await loginUser({
           email: credential?.email,
           password: credential?.password,
         })

@@ -1,18 +1,17 @@
 'use client'
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import Select, { MultiValue } from 'react-select'
 import { Button } from '@/components/button'
 import { Select as SelectDiscipline } from '@/components/select'
 import { Input } from '@/components/input'
-import { api } from '@/services/api'
 import { SessionProps } from '@/types'
 import {
   listPeriod,
   listTeacher,
   getCourses,
   listDiscipline,
+  createClass,
 } from '@/services/http'
-import { Axios } from 'axios'
 
 interface ProfessorOption {
   value: string
@@ -82,10 +81,12 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
     const data = Object.fromEntries(formData.entries())
 
     try {
-      const response = await api.post('/class/register', formData, {
-        headers: { Authorization: 'Bearer ' + token },
+      const response = await createClass({
+        data: formData,
+        token,
       })
-      setMessage(response.data.message)
+
+      setMessage(response)
       setIsError(false)
     } catch (error: any) {
       setMessage(error.response.data.error)

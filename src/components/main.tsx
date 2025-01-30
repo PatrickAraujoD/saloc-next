@@ -178,7 +178,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
 
       if (isCourseUndefined || isAdmin || hasNoSession) {
         response = await getClassAll(body)
-        setListClass(response.data)
+        setListClass(response)
       } else {
         response = await getRequestClassProgress({
           token,

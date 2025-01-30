@@ -2,6 +2,7 @@
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { api } from '@/services/api'
+import { createCourse } from '@/services/http'
 import { SessionProps } from '@/types'
 import { ChangeEvent, FormEvent, useState } from 'react'
 
@@ -30,17 +31,10 @@ export function RegisterCourseForm({ session }: RegisterCourseFormProps) {
     setLoading(true)
 
     try {
-      await api.post(
-        '/course/register',
-        {
-          nameCourse,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
+      await createCourse({
+        nameCourse,
+        token,
+      })
 
       setMessage('Curso registrado com sucesso')
       setNameCourse('')

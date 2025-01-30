@@ -1,8 +1,14 @@
 'use client'
 import { redirect, useParams } from 'next/navigation'
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
-import { api } from '@/services/api'
-import { deleteAlocacao, getClass, getRooms } from '@/services/http'
+import {
+  deleteAlocacao,
+  getClass,
+  getRooms,
+  getScheduleRequestByIdClass,
+  registerClassAllocate,
+  allocateRooms,
+} from '@/services/http'
 import { ClassInfoTableAllocate } from './class-info-table-allocate'
 import { ClassInfoSection } from './class-info-section'
 import { AllocateForm } from './allocate-form'
@@ -48,16 +54,12 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
       const decodedScheduleRequest = Array.isArray(scheduleRequest)
         ? scheduleRequest.join(',')
         : decodeURIComponent(scheduleRequest)
-      const response = await api.post(
-        `/schedule/list/request/${idClass}`,
-        {
-          schedule: decodedScheduleRequest,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      )
-      setListSchedule(response.data)
+      const response = await getScheduleRequestByIdClass({
+        idClass,
+        token,
+        schedule: decodedScheduleRequest,
+      })
+      setListSchedule(response)
       return response.data
     } catch (error) {
       return []
@@ -98,16 +100,12 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
       ? scheduleRequest.join(',')
       : decodeURIComponent(scheduleRequest).replace('  ', ' ')
     try {
-      await api.post(
-        'class/allocate/register',
-        {
-          valueRoom,
-          schedule,
-          idClass,
-          scheduleSend: decodedScheduleRequest,
-        },
-        { headers: { Authorization: `Bearer ${token}` } },
-      )
+      await registerClassAllocate({
+        valueRoom,
+        schedule,
+        idClass,
+        scheduleSend: decodedScheduleRequest,
+      })
 
       const scheduleResponse = await fecthSchedule(Number(idClass))
       setListSchedule(scheduleResponse)
@@ -149,10 +147,11 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
 
   async function fecthRoomAllocate() {
     if (idClass && classInfo?.period?.id) {
-      const response = await api.get(
-        `/room/allocate_rooms/${Number(idClass)}/${classInfo?.period.id}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      )
+      const response = await allocateRooms({
+        idClass,
+        idPeriod: classInfo?.period.id,
+        token,
+      })
       setClassInfoTable(response.data)
       return response
     }

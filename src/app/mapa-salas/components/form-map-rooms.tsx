@@ -1,8 +1,7 @@
 'use client'
 import { Button } from '@/components/button'
 import { Select } from '@/components/select'
-import { api } from '@/services/api'
-import { listPeriod, getRooms } from '@/services/http'
+import { listPeriod, getRooms, getRoomAllocateClass } from '@/services/http'
 import { Period, Room, SessionProps } from '@/types'
 import { ChangeEvent, RefObject, useEffect, useState } from 'react'
 
@@ -41,21 +40,19 @@ export function FormMapRoom({
     setListPeriods(periods)
   }
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     if (roomId !== null && periodId !== null) {
-      api
-        .get(`/room/allocate_classes/${roomId}/${periodId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      try {
+        const response = await getRoomAllocateClass({
+          roomId,
+          periodId,
+          token,
         })
-        .then((response) => {
-          handleSetAllocateClasses(response.data)
-        })
-        .catch((error) => {
-          console.error('Error allocating classes:', error)
-        })
+        handleSetAllocateClasses(response)
+      } catch (error) {
+        console.error('Error allocating classes:', error)
+      }
     }
   }
 

@@ -2,8 +2,7 @@
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Select } from '@/components/select'
-import { api } from '@/services/api'
-import { getCourses } from '@/services/http'
+import { getCourses, createSector } from '@/services/http'
 import { SessionProps } from '@/types'
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 
@@ -39,18 +38,11 @@ export function RegisterCourseForm({ session }: RegisterCourseFormProps) {
     setLoading(true)
 
     try {
-      await api.post(
-        '/sector/create',
-        {
-          nameSector,
-          course: nameCourse,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
+      await createSector({
+        nameSector,
+        course: nameCourse,
+        token,
+      })
 
       setMessage('Setor registrado com sucesso')
       setNameSector('')

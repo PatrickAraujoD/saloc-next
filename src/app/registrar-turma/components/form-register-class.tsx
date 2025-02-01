@@ -39,6 +39,7 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
   const handleProfessoresChange = (
     selectedOptions: MultiValue<ProfessorOption>,
   ) => {
+    console.log(selectedOptions)
     const selectedValues = selectedOptions.map((option) => option.value)
     console.log(selectedValues)
     setSelectedProfessores(selectedValues)
@@ -77,19 +78,22 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
     setIsLoading(true)
 
     const formData = new FormData(event.target as HTMLFormElement)
-
     const data = Object.fromEntries(formData.entries())
+    const dataSend = {
+      ...data,
+      teachers: selectedProfessores,
+    }
 
     try {
       const response = await createClass({
-        data: formData,
+        data: dataSend,
         token,
       })
 
       setMessage(response)
       setIsError(false)
     } catch (error: any) {
-      setMessage(error.response.data.error)
+      setMessage('Não foi possível criar uma nova turma')
       setIsError(true)
     }
 

@@ -2,7 +2,7 @@
 import { api } from '../api'
 
 type Props = {
-  data: FormData
+  data: any
   token?: string
 }
 

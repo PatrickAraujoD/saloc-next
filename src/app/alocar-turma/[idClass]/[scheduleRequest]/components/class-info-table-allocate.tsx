@@ -38,7 +38,7 @@ export function ClassInfoTableAllocate({
                     className="w-28 h-10 bg-red-700 hover:text-red-700 hover:border-red-700 mt-0"
                     onClick={() => openModal(classInfo)}
                   >
-                    <MdDeleteForever size={24} className="m-auto"/>
+                    <MdDeleteForever size={24} className="m-auto" />
                   </Button>
                 </td>
               </tr>

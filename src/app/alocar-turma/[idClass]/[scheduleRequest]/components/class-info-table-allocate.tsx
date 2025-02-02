@@ -2,6 +2,7 @@ import { Button } from '@/components/button'
 import { Td } from '@/components/td'
 import { Th } from '@/components/th'
 import { ClassInfoTable as ClassInfoTableType } from '@/types'
+import { MdDeleteForever } from 'react-icons/md'
 
 interface ClassInfoTableProps {
   classInfoTable: ClassInfoTableType[]
@@ -14,7 +15,7 @@ export function ClassInfoTableAllocate({
 }: ClassInfoTableProps) {
   return (
     <div className="mt-20 w-full overflow-auto">
-      {classInfoTable.length > 0 && (
+      {classInfoTable?.length > 0 && (
         <table className="w-full text-center uppercase font-semibold">
           <thead>
             <tr>
@@ -33,11 +34,12 @@ export function ClassInfoTableAllocate({
                 <td className="border-2 border-black text-xs xl:text-sm w-56 text-center">
                   <Button
                     isButtonDisabled={false}
-                    title="deletar"
                     type="button"
                     className="w-28 h-10 bg-red-700 hover:text-red-700 hover:border-red-700 mt-0"
                     onClick={() => openModal(classInfo)}
-                  />
+                  >
+                    <MdDeleteForever size={24} className="m-auto"/>
+                  </Button>
                 </td>
               </tr>
             ))}

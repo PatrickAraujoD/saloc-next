@@ -60,7 +60,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
         schedule: decodedScheduleRequest,
       })
       setListSchedule(response)
-      return response.data
+      return response
     } catch (error) {
       return []
     }
@@ -105,14 +105,16 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
         schedule,
         idClass,
         scheduleSend: decodedScheduleRequest,
+        token,
       })
 
       const scheduleResponse = await fecthSchedule(Number(idClass))
+      console.log(scheduleResponse)
       setListSchedule(scheduleResponse)
       setListRooms([])
       setValueRoom(0)
       const tableAllocateinfo = await fecthRoomAllocate()
-      setClassInfoTable(tableAllocateinfo?.data)
+      setClassInfoTable(tableAllocateinfo)
     } catch (error) {
       console.log('Error ao alocar turma:', error)
     }
@@ -152,7 +154,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
         idPeriod: classInfo?.period.id,
         token,
       })
-      setClassInfoTable(response.data)
+      setClassInfoTable(response)
       return response
     }
   }

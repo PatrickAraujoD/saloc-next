@@ -37,21 +37,20 @@ export function RegisterCourseForm({ session }: RegisterCourseFormProps) {
   async function registerCourse(token: string, nameSector: string) {
     setLoading(true)
 
-    try {
-      await createSector({
-        nameSector,
-        course: nameCourse,
-        token,
-      })
+    const isCreateSector = await createSector({
+      nameSector,
+      course: nameCourse,
+      token,
+    })
 
+    if (isCreateSector) {
       setMessage('Setor registrado com sucesso')
       setNameSector('')
       setIsError(false)
-    } catch (error) {
+    } else {
       setMessage('Falha ao tentar registrar o setor')
       setIsError(true)
     }
-
     setLoading(false)
   }
 

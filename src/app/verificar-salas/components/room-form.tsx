@@ -26,26 +26,23 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
     setIsLoading(true)
     event.preventDefault()
 
-    try {
-      const response = await createRoom({
-        number,
-        capacity,
-        block,
-        floor,
-        building,
-      })
-
+    const response = await createRoom({
+      number,
+      capacity,
+      block,
+      floor,
+      building,
+    })
+    if (!response.eror) {
       const newRoom = response
       setMessage('Sala registrada com sucesso!')
 
       onRoomAdded(newRoom)
       setIsError(false)
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data || 'Erro desconhecido'
-        setMessage(errorMessage)
-        setIsError(true)
-      }
+    } else {
+      const errorMessage = response.error
+      setMessage(errorMessage)
+      setIsError(true)
     }
     setIsLoading(false)
   }

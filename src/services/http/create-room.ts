@@ -1,4 +1,5 @@
 'use server'
+import { AxiosError } from 'axios'
 import { api } from '../api'
 import { Room } from '@/types'
 
@@ -18,17 +19,26 @@ export async function createRoom({
   floor,
   building,
   token,
-}: Props) {
-  const response = await api.post(
-    '/room/register',
-    {
-      number,
-      capacity,
-      block,
-      floor,
-      building,
-    },
-    { headers: { Authorization: `Bearer ${token}` } },
-  )
-  return response.data.room as Room
+}: Props): Promise<any> {
+  try {
+    const response = await api.post(
+      '/room/register',
+      {
+        number,
+        capacity,
+        block,
+        floor,
+        building,
+      },
+      { headers: { Authorization: `Bearer ${token}` } },
+    )
+    return response.data.room as Room
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const errorMessage =
+        error?.response?.data?.error ||
+        'Falha ao tentar registrar a solicitação'
+      return { error: errorMessage }
+    }
+  }
 }

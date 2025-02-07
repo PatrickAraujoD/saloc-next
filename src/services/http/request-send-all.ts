@@ -1,4 +1,5 @@
 'use server'
+import { AxiosError } from 'axios'
 import { api } from '../api'
 
 type Class = {
@@ -17,14 +18,19 @@ export async function requestSendAll({
   classes,
   token,
 }: RequestSendAllProps) {
-  await api.post(
-    '/request/send_all',
-    {
-      destination,
-      classes,
-    },
-    {
-      headers: { Authorization: 'Bearer ' + token },
-    },
-  )
+  try {
+    await api.post(
+      '/request/send_all',
+      {
+        destination,
+        classes,
+      },
+      {
+        headers: { Authorization: 'Bearer ' + token },
+      },
+    )
+    return true
+  } catch (error) {
+    return false
+  }
 }

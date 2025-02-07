@@ -12,9 +12,14 @@ export async function recoverUserPassword({
   password,
   confirmationPassword,
 }: Props) {
-  await api.post('/user/reset_password', {
-    token,
-    password,
-    confirmationPassword,
-  })
+  try {
+    await api.post('/user/reset_password', {
+      token,
+      password,
+      confirmationPassword,
+    })
+    return true
+  } catch (error) {
+    return false
+  }
 }

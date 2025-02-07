@@ -12,6 +12,5 @@ export async function loginUser({ email, password }: Props) {
     email,
     password,
   })
-  console.log(response)
   return response
 }

@@ -92,7 +92,7 @@ export function ClassroomList({
     SelectedClassesProps[]
   >([])
   const [message, setMessage] = useState('')
-  const [isError, SetIsError] = useState(false)
+  const [isError, setIsError] = useState(false)
   const [isCheckedAll, setIsCheckedAll] = useState(false)
   const [checkedItems, setCheckedItems] = useState<number[]>([])
   const token = session?.token
@@ -189,42 +189,45 @@ export function ClassroomList({
     classes: SelectedClassesProps[],
     destination: number,
   ) => {
-    try {
-      await requestSendAll({
-        destination,
-        classes,
-      })
+    const isSendAll = await requestSendAll({
+      destination,
+      classes,
+      token,
+    })
 
+    if (isSendAll) {
       if (updateTable) {
         await updateTable()
       }
-      SetIsError(false)
+      setIsError(false)
       setCheckedItems([])
       setSelectedClasses([])
-    } catch (error: any) {
-      setMessage(error.response.data.error)
-      SetIsError(true)
+    } else {
+      setMessage('Erro ao enviar as solicitações')
+      setIsError(true)
     }
     handleCloseModal()
   }
 
   const handleAcceptSelectedRequests = async () => {
-    try {
-      const response = await requestAcceptAll({
-        token,
-        requests: selectedRequests,
-      })
+    const response = await requestAcceptAll({
+      token,
+      requests: selectedRequests,
+    })
 
+    if (!response.error) {
       if (updateTable) {
         await updateTable()
       }
 
       setMessage(response)
+      setIsError(false)
       setSelectedRequests([])
       setCheckedItems([])
       setIsCheckedAll(false)
-    } catch (error) {
-      setMessage('Ocorreu algum erro no momento de aceitar as solicitações')
+    } else {
+      setMessage(response.error)
+      setIsError(true)
     }
   }
 
@@ -306,11 +309,12 @@ export function ClassroomList({
       idClass: selectedClass?.idClass,
       token,
     })
-
     if (updateTable) {
       await updateTable()
     }
-    setMessage(response)
+    if (response.error) {
+      setMessage(response.error)
+    }
     handleCloseModalSendRequest()
   }
 

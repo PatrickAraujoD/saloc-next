@@ -1,4 +1,5 @@
 'use server'
+import { AxiosError } from 'axios'
 import { api } from '../api'
 
 type Props = {
@@ -8,9 +9,17 @@ type Props = {
 }
 
 export async function allocateRooms({ idClass, idPeriod, token }: Props) {
-  const response = await api.get(
-    `/room/allocate_rooms/${Number(idClass)}/${idPeriod}`,
-    { headers: { Authorization: `Bearer ${token}` } },
-  )
-  return response.data
+  try {
+    const response = await api.get(
+      `/room/allocate_rooms/${Number(idClass)}/${idPeriod}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    )
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const errorMessage =
+        error?.response?.data?.message || 'Falha ao alocar sala'
+      return { error: errorMessage }
+    }
+  }
 }

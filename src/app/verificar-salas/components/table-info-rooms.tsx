@@ -46,21 +46,18 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
 
   async function handleDeleteRoom() {
     if (roomToDelete) {
-      try {
-        await deleteRoom(roomToDelete.id, token)
-        setRoomsList((prevRoomsList) =>
-          prevRoomsList.filter((room) => room.id !== roomToDelete.id),
-        )
+      const response = await deleteRoom(roomToDelete.id, token)
+      setRoomsList((prevRoomsList) =>
+        prevRoomsList.filter((room) => room.id !== roomToDelete.id),
+      )
+      if (response.error) {
+        setMessage(response.error)
+        setIsModalOpen(false)
+        setIsError(true)
+      } else {
         setMessage('Sala deletada com sucesso!')
         setIsModalOpen(false)
         setIsError(false)
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error('Erro ao deletar sala:', error)
-          setMessage(error.response?.data.message)
-          setIsModalOpen(false)
-          setIsError(true)
-        }
       }
     }
   }

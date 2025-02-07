@@ -30,14 +30,14 @@ export function LoginForm() {
   async function handleSubmitEmailRecoverPassword(event: FormEvent) {
     event.preventDefault()
     setIsLoading(true)
-    try {
-      const message = await sendEmail({
-        email,
-      })
+    const message = await sendEmail({
+      email,
+    })
+    if (!message.error) {
       setMessageSendEmail(message)
       setIsError(false)
-    } catch (error) {
-      setMessageSendEmail('Não foi possível enviar o email de recuperação.')
+    } else {
+      setMessageSendEmail(message.error)
       setIsError(true)
     }
     setEmail('')

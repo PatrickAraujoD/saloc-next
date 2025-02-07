@@ -16,14 +16,19 @@ export async function registerClassAllocate({
   scheduleSend,
   token,
 }: Props) {
-  await api.post(
-    'class/allocate/register',
-    {
-      valueRoom,
-      schedule,
-      idClass,
-      scheduleSend,
-    },
-    { headers: { Authorization: `Bearer ${token}` } },
-  )
+  try {
+    await api.post(
+      'class/allocate/register',
+      {
+        valueRoom,
+        schedule,
+        idClass,
+        scheduleSend,
+      },
+      { headers: { Authorization: `Bearer ${token}` } },
+    )
+    return true
+  } catch (error) {
+    return false
+  }
 }

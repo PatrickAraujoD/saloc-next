@@ -84,16 +84,16 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
       teachers: selectedProfessores,
     }
 
-    try {
-      const response = await createClass({
-        data: dataSend,
-        token,
-      })
+    const response = await createClass({
+      data: dataSend,
+      token,
+    })
 
+    if (!response.error) {
       setMessage(response)
       setIsError(false)
-    } catch (error: any) {
-      setMessage('Não foi possível criar uma nova turma')
+    } else {
+      setMessage(response.error)
       setIsError(true)
     }
 

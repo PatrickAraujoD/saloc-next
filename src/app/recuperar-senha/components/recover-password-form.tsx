@@ -38,16 +38,17 @@ export function RecoverPasswordForm() {
       setMessageForm('')
     }
     setIsLoading(true)
-    try {
-      await recoverUserPassword({
-        token: tokenValue,
-        password,
-        confirmationPassword,
-      })
 
+    const isRecoverPassword = await recoverUserPassword({
+      token: tokenValue,
+      password,
+      confirmationPassword,
+    })
+
+    if (isRecoverPassword) {
       setMessage('Senha atualizada com sucesso!')
       setIsError(false)
-    } catch (error) {
+    } else {
       setMessage('Não foi possível atualizar a senha')
       setIsError(true)
     }

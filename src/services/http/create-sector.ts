@@ -8,16 +8,21 @@ type Props = {
 }
 
 export async function createSector({ nameSector, course, token }: Props) {
-  await api.post(
-    '/sector/create',
-    {
-      nameSector,
-      course,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
+  try {
+    await api.post(
+      '/sector/create',
+      {
+        nameSector,
+        course,
       },
-    },
-  )
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    return true
+  } catch (error) {
+    return false
+  }
 }

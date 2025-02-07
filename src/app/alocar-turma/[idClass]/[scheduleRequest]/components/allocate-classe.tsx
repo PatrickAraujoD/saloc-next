@@ -99,15 +99,16 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
     const decodedScheduleRequest = Array.isArray(scheduleRequest)
       ? scheduleRequest.join(',')
       : decodeURIComponent(scheduleRequest).replace('  ', ' ')
-    try {
-      await registerClassAllocate({
-        valueRoom,
-        schedule,
-        idClass,
-        scheduleSend: decodedScheduleRequest,
-        token,
-      })
 
+    const isRegisterClassAllocate = await registerClassAllocate({
+      valueRoom,
+      schedule,
+      idClass,
+      scheduleSend: decodedScheduleRequest,
+      token,
+    })
+
+    if (isRegisterClassAllocate) {
       const scheduleResponse = await fecthSchedule(Number(idClass))
       console.log(scheduleResponse)
       setListSchedule(scheduleResponse)
@@ -115,8 +116,6 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
       setValueRoom(0)
       const tableAllocateinfo = await fecthRoomAllocate()
       setClassInfoTable(tableAllocateinfo)
-    } catch (error) {
-      console.log('Error ao alocar turma:', error)
     }
   }
 
@@ -132,18 +131,14 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
 
   async function handleDeleteRoom() {
     if (valueDelete) {
-      try {
-        await deleteAlocacao(valueDelete.id, token)
-        setClassInfoTable((classInfo) =>
-          classInfo.filter((room) => room.id !== valueDelete.id),
-        )
-        setIsModalOpen(false)
+      await deleteAlocacao(valueDelete.id, token)
+      setClassInfoTable((classInfo) =>
+        classInfo.filter((room) => room.id !== valueDelete.id),
+      )
+      setIsModalOpen(false)
 
-        const response = await fecthSchedule(Number(idClass))
-        setSchedule(response)
-      } catch (error) {
-        console.error('Erro ao excluir sala:', error)
-      }
+      const response = await fecthSchedule(Number(idClass))
+      setSchedule(response)
     }
   }
 
@@ -154,8 +149,10 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
         idPeriod: classInfo?.period.id,
         token,
       })
-      setClassInfoTable(response)
-      return response
+      if (!response.error) {
+        setClassInfoTable(response)
+        return response
+      }
     }
   }
 

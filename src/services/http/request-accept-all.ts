@@ -10,14 +10,18 @@ export async function requestAcceptAll({
   token,
   requests,
 }: RequestAcceptAllProps) {
-  const response = await api.post(
-    '/request/accept_all',
-    {
-      requests,
-    },
-    {
-      headers: { Authorization: 'Bearer ' + token },
-    },
-  )
-  return response.data
+  try {
+    const response = await api.post(
+      '/request/accept_all',
+      {
+        requests,
+      },
+      {
+        headers: { Authorization: 'Bearer ' + token },
+      },
+    )
+    return response.data
+  } catch (error) {
+    return { error: 'Ocorreu algum erro no momento de aceitar as solicitações' }
+  }
 }

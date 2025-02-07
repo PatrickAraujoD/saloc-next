@@ -1,9 +1,10 @@
 'use server'
+import { AxiosError } from 'axios'
 import { api } from '../api'
 
 export async function deleteAlocacao(id: number, token: string) {
-  return api
-    .post(
+  try {
+    const response = await api.post(
       `/room/allocate/delete`,
       {
         id,
@@ -14,5 +15,12 @@ export async function deleteAlocacao(id: number, token: string) {
         },
       },
     )
-    .then((response) => response.data)
+    return response.data
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const errorMessage =
+        error?.response?.data?.error || 'Ocorreu um erro desconhecido'
+      return { error: errorMessage }
+    }
+  }
 }

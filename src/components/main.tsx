@@ -111,11 +111,11 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
 
   async function importDataSigaa() {
     setIsLoadingButtonSigaa(true)
-    try {
-      await pushDataSigaa(period, token)
+    const isPushDataSigaa = await pushDataSigaa(period, token)
+    if (isPushDataSigaa) {
       setMessage('Dados carregados com sucesso!')
       setIsError(false)
-    } catch (error) {
+    } else {
       setMessage('Falha ao importar dados do sigaa')
       setIsError(true)
     }
@@ -125,17 +125,17 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
 
   async function allocationAutomatic() {
     setIsLoadingAllocateAutomatic(true)
-    try {
-      const idSector = session?.user.sector?.id
-      const response = await allocateAutomatic({
-        idPeriod: period,
-        idSector,
-        token,
-      })
+    const idSector = session?.user.sector?.id
+    const response = await allocateAutomatic({
+      idPeriod: period,
+      idSector,
+      token,
+    })
+    if (response.error) {
       setMessage(response.message)
       setIsError(false)
-    } catch (error) {
-      setMessage('Falha ao importar dados do sigaa')
+    } else {
+      setMessage(response.error)
       setIsError(true)
     }
 
@@ -391,7 +391,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
           />
         </div>
       )}
-      {session?.user.sector.course ? (
+      {session?.user.sector?.course ? (
         <Menu
           generatePdfClassSections={generatePDF}
           isButtonDisabled={isButtonDisabled}

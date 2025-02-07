@@ -44,16 +44,13 @@ export function RegisterForm({ session }: RegisterFormProps) {
       confirmPassword,
     }
 
-    try {
-      const response = await createUser(token, body)
-
+    const response = await createUser(token, body)
+    if (!response.error) {
       setMessage(response.message)
       setIsError(false)
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        setMessage(err?.response?.data.message)
-        setIsError(true)
-      }
+    } else {
+      setMessage(response.error)
+      setIsError(true)
     }
   }
 

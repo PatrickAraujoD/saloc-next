@@ -1,7 +1,6 @@
 'use client'
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
-import { api } from '@/services/api'
 import { createCourse } from '@/services/http'
 import { SessionProps } from '@/types'
 import { ChangeEvent, FormEvent, useState } from 'react'
@@ -30,17 +29,16 @@ export function RegisterCourseForm({ session }: RegisterCourseFormProps) {
   async function registerCourse(token: string, nameCourse: string) {
     setLoading(true)
 
-    try {
-      await createCourse({
-        nameCourse,
-        token,
-      })
-
+    const response = await createCourse({
+      nameCourse,
+      token,
+    })
+    if (!response.error) {
       setMessage('Curso registrado com sucesso')
       setNameCourse('')
       setIsError(false)
-    } catch (error) {
-      setMessage('Falha ao tentar registrar o curso')
+    } else {
+      setMessage(response.error)
       setIsError(true)
     }
 

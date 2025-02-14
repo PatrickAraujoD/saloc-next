@@ -70,7 +70,10 @@ export function LoginForm() {
     <main className="flex-grow flex flex-col items-center justify-center p-4 relative">
       {isOpenPoupSendEmail && (
         <div className="absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-50">
-          <div className="relative bg-white p-6 rounded shadow-lg xl:w-96 flex flex-col items-center justify-center">
+          <form
+            onSubmit={handleSubmitEmailRecoverPassword}
+            className="relative bg-white p-6 rounded shadow-lg xl:w-96 flex flex-col items-center justify-center"
+          >
             <button
               className="absolute right-3 top-3"
               onClick={() => setIsOpenPoupSendEmail(false)}
@@ -95,7 +98,7 @@ export function LoginForm() {
               isLoading={isLoading && isOpenPoupSendEmail}
               className="mt-10"
             />
-          </div>
+          </form>
         </div>
       )}
       {messageSendEmail && (

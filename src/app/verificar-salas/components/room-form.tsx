@@ -9,17 +9,22 @@ import { ChangeEvent, useState } from 'react'
 interface RoomFormProps {
   session: SessionProps
   onRoomAdded: (newRoom: Room) => void
+  setMessage: (message: string) => void
+  setIsError: (error: boolean) => void
 }
 
-export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
+export function RoomForm({
+  session,
+  onRoomAdded,
+  setMessage,
+  setIsError,
+}: RoomFormProps) {
   const [number, setNumber] = useState('')
   const [capacity, setCapacity] = useState<number>(0)
   const [block, setBlock] = useState('')
   const [floor, setFloor] = useState('')
   const [building, setBuilding] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [message, setMessage] = useState('')
-  const [isError, setIsError] = useState(false)
   const token = session.token
 
   async function handleSubmit(event: React.FormEvent) {
@@ -34,7 +39,7 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
       building,
       token,
     })
-    if (!response.eror) {
+    if (!response.error) {
       const newRoom = response
       setMessage('Sala registrada com sucesso!')
 
@@ -79,20 +84,6 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
 
   return (
     <div>
-      {message && (
-        <div className="flex justify-between items-center mt-10 uppercase font-bold text-xl text-blue-950">
-          <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
-            {message}
-          </p>
-          <Button
-            isButtonDisabled={false}
-            title={'x'}
-            type={'button'}
-            className={`flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'}`}
-            onClick={closeMessage}
-          />
-        </div>
-      )}
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col md:grid md:grid-cols-2 md:gap-x-36 mt-10 mb-6">
           <Input

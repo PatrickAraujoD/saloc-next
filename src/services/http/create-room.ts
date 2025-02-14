@@ -36,8 +36,7 @@ export async function createRoom({
   } catch (error) {
     if (error instanceof AxiosError) {
       const errorMessage =
-        error?.response?.data?.error ||
-        'Falha ao tentar registrar a solicitação'
+        error?.response?.data || 'Falha ao tentar registrar a solicitação'
       return { error: errorMessage }
     }
   }

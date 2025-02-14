@@ -101,7 +101,12 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
           />
         </div>
       )}
-      <RoomForm session={session} onRoomAdded={handleRoomAdded} />
+      <RoomForm
+        session={session}
+        onRoomAdded={handleRoomAdded}
+        setMessage={setMessage}
+        setIsError={setIsError}
+      />
       {isLoading ? (
         <table className="mt-4 table-zebra-zebra md:table border-collapse">
           <thead>

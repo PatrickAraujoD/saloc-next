@@ -32,6 +32,7 @@ export function RoomForm({ session, onRoomAdded }: RoomFormProps) {
       block,
       floor,
       building,
+      token,
     })
     if (!response.eror) {
       const newRoom = response

@@ -131,8 +131,9 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
       idSector,
       token,
     })
-    if (response.error) {
+    if (!response.error) {
       setMessage(response.message)
+      await handleUpdateTable()
       setIsError(false)
     } else {
       setMessage(response.error)

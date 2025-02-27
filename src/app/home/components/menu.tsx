@@ -67,7 +67,7 @@ export default function Menu({
             isButtonDisabled={isButtonDisabled}
             type="button"
             title="relatório"
-            className="bg-transparent border-transparent w-full"
+            className="border-transparent w-full hover:text-white"
             onClick={() => {
               if (session?.user.sector.course && generatePdfClassSections) {
                 generatePdfClassSections()
@@ -90,28 +90,28 @@ export default function Menu({
                 title="alocar turmas"
                 type="button"
                 onClick={redirecAllocateRoom}
-                className="bg-transparent border-transparent w-full"
+                className="border-transparent w-full hover:text-white"
               />
               <Button
                 isButtonDisabled={false}
                 title="mapa de sala"
                 type="button"
                 onClick={redirecMapOfRooms}
-                className="bg-transparent border-transparent w-full"
+                className="border-transparent w-full hover:text-white"
               />
               <Button
                 isButtonDisabled={false}
                 title="verificar salas"
                 type="button"
                 onClick={redirecCheckRooms}
-                className="bg-transparent border-transparent w-full"
+                className="border-transparent w-full hover:text-white"
               />
               <Button
                 isButtonDisabled={false}
                 title="adicionar turma"
                 type="button"
                 onClick={redirectClass}
-                className="sm:h-16 xl:h-12"
+                className="sm:h-16 xl:h-12 hover:text-white"
               />
             </>
           )}
@@ -122,21 +122,21 @@ export default function Menu({
                 title="adicionar usuário"
                 type="button"
                 onClick={() => router.push(`/register`)}
-                className="bg-transparent border-transparent w-full"
+                className="border-transparent w-full hover:text-white"
               />
               <Button
                 isButtonDisabled={false}
                 title="adicionar curso"
                 type="button"
                 onClick={() => router.push(`/registrar-curso`)}
-                className="bg-transparent border-transparent w-full"
+                className="border-transparent w-full hover:text-white"
               />
               <Button
                 isButtonDisabled={false}
                 title="adicionar setor"
                 type="button"
                 onClick={() => router.push(`/registrar-setor`)}
-                className="bg-transparent border-transparent w-full"
+                className="border-transparent w-full hover:text-white"
               />
             </>
           )}

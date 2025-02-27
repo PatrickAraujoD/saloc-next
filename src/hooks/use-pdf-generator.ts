@@ -27,11 +27,27 @@ const usePdfGenerator = () => {
 
     if (selectSemester && originalContent && selectSemester.value !== '0') {
       const content = originalContent?.cloneNode(true) as HTMLTableElement
-      const columnIndexToRemove = 9
+      const columnsNameToRemove = ['ações', 'envios']
+
+      const headerRow = content.rows[0]
+      const columnsIndexesToRemove: number[] = []
+
+      for (let i = headerRow.cells.length - 1; i >= 0; i--) {
+        if (
+          columnsNameToRemove.includes(
+            headerRow.cells[i].textContent?.trim() || '',
+          )
+        ) {
+          columnsIndexesToRemove.push(i)
+        }
+      }
 
       for (const row of content.rows) {
-        if (row.cells.length > columnIndexToRemove) {
-          row.deleteCell(columnIndexToRemove)
+        for (const index of columnsIndexesToRemove) {
+          console.log(index)
+          if (index < row.cells.length) {
+            row.deleteCell(index)
+          }
         }
       }
 

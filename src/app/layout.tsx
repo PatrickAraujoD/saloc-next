@@ -6,7 +6,6 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { getServerSession } from 'next-auth'
 import { nextAuthConfig } from '@/lib/auth'
-import { SessionProps } from '@/types'
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -26,6 +25,9 @@ export default async function RootLayout({
   const session = await getServerSession(nextAuthConfig)
   return (
     <html lang="pt-BR">
+      <head>
+        <link rel="icon" href="/icon-saloc.ico" />
+      </head>
       <body className={`${poppins.className} flex flex-col min-h-screen`}>
         <Header session={session} />
         <NextAuthSessionProvider>{children}</NextAuthSessionProvider>

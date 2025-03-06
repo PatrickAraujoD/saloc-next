@@ -15,6 +15,8 @@ import {
 import { SessionProps, Teacher } from '@/types/index'
 import usePdfGenerator from '@/hooks/use-pdf-generator'
 import Menu from '@/app/home/components/menu'
+import { Toast } from './toast'
+import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
 
 interface Course {
   id: number
@@ -52,6 +54,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
   const [classesNotSent, setClassesNotSent] = useState<ClassComplet[]>([])
   const [completedClasses, setCompletedClasses] = useState<ClassComplet[]>([])
   const token = session?.token
+  useAutoClearMessage({ setMessage, message })
 
   function captureValueCourse(event: ChangeEvent<HTMLSelectElement>) {
     const courseId = Number(event.target.value)
@@ -197,7 +200,6 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
   }
 
   const formatRoomBlock = (scheduleComplet: string) => {
-    console.log(scheduleComplet)
     const [days] = scheduleComplet.split(/[MTN]/)
     if (days.length === 1) {
       const dayMapping: { [key: string]: string } = {
@@ -378,20 +380,7 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
 
   return (
     <main className="px-6 md:px-20 flex-grow">
-      {message && (
-        <div className="text-xl uppercase font-bold mb-4 flex justify-between items-center mt-10">
-          <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
-            {message}
-          </p>
-          <Button
-            isButtonDisabled={false}
-            title="x"
-            type="button"
-            className={`flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'} `}
-            onClick={() => setMessage('')}
-          />
-        </div>
-      )}
+      {message && <Toast message={message} isError={isError} />}
       {session?.user.sector?.course ? (
         <Menu
           generatePdfClassSections={generatePDF}

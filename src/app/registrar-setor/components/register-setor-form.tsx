@@ -2,6 +2,8 @@
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Select } from '@/components/select'
+import { Toast } from '@/components/toast'
+import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
 import { getCourses, createSector } from '@/services/http'
 import { SessionProps } from '@/types'
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
@@ -18,6 +20,7 @@ export function RegisterCourseForm({ session }: RegisterCourseFormProps) {
   const [nameCourse, setNameCourse] = useState(0)
   const [listCourse, setListCourse] = useState([])
   const token = session.token
+  useAutoClearMessage({ setMessage, message })
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -71,20 +74,7 @@ export function RegisterCourseForm({ session }: RegisterCourseFormProps) {
 
   return (
     <main className="flex-grow flex flex-col items-center">
-      {message && (
-        <div className="text-xl font-bold mb-4 flex justify-between items-center mt-4">
-          <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
-            {message}
-          </p>
-          <Button
-            isButtonDisabled={false}
-            title="x"
-            type="button"
-            className={`flex items-center justify-center border-2 px-2 rounded-lg ml-4 hover:bg-white transition-colors w-6 h-6 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'} `}
-            onClick={() => setMessage('')}
-          />
-        </div>
-      )}
+      {message && <Toast message={message} isError={isError} />}
       <form
         onSubmit={handleSubmit}
         className="border-2 border-blue-950 p-10 m-auto w-80 h-96 rounded-md flex flex-col items-center"

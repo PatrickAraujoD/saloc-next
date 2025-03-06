@@ -9,6 +9,8 @@ import { Room, SessionProps } from '@/types'
 import axios from 'axios'
 import { RoomForm } from './room-form'
 import { MdDeleteForever } from 'react-icons/md'
+import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
+import { Toast } from '@/components/toast'
 
 interface TableInfoRoomsProps {
   session: SessionProps
@@ -31,6 +33,7 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const token = session.token
+  useAutoClearMessage({ setMessage, message })
 
   async function fetchGetRooms() {
     try {
@@ -87,20 +90,7 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
 
   return (
     <>
-      {message && (
-        <div className="flex justify-between items-center my-5 uppercase font-bold text-xl text-blue-950">
-          <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
-            {message}
-          </p>
-          <Button
-            isButtonDisabled={false}
-            title={'x'}
-            type={'button'}
-            className={`flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'}`}
-            onClick={closeMessage}
-          />
-        </div>
-      )}
+      {message && <Toast message={message} isError={isError} />}
       <RoomForm
         session={session}
         onRoomAdded={handleRoomAdded}

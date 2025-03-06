@@ -12,6 +12,8 @@ import {
   listDiscipline,
   createClass,
 } from '@/services/http'
+import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
+import { Toast } from '@/components/toast'
 
 interface ProfessorOption {
   value: string
@@ -33,45 +35,16 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [course, setCourse] = useState<number>(0)
   const [discipline, setDiscipline] = useState<number>(0)
+  useAutoClearMessage({ setMessage, message })
 
   const token = session.token
 
   const handleProfessoresChange = (
     selectedOptions: MultiValue<ProfessorOption>,
   ) => {
-    console.log(selectedOptions)
     const selectedValues = selectedOptions.map((option) => option.value)
-    console.log(selectedValues)
     setSelectedProfessores(selectedValues)
   }
-
-  // const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault()
-  //   setIsLoading(true)
-
-  //   const formData = new FormData(e.target as HTMLFormElement)
-  //   const event = e.target as HTMLFormElement
-  //   console.log(event)
-  //   console.log(formData)
-
-  //   // formData.append('teachers', selectedProfessores.join(','))
-
-  //   try {
-  //     // const response = await api.post('/classe/register', formData, {
-  //     //   headers: { Authorization: 'Bearer ' + token },
-  //     // })
-
-  //     // setMessage(response.data.message)
-  //     // setIsError(false)
-  //     console.log(formData)
-  //   } catch (error: any) {
-  //     setMessage(
-  //       `Não foi possível salvar a turma: ${error.response?.data?.error}`,
-  //     )
-  //     setIsError(true)
-  //   }
-  //   setIsLoading(false)
-  // }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -159,20 +132,7 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
 
   return (
     <main className="py-10 flex-1 flex flex-col items-center justify-center">
-      {message && (
-        <div className="text-xl uppercase font-bold mb-4 gap-4 flex justify-between items-center mt-10">
-          <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
-            {message}
-          </p>
-          <Button
-            isButtonDisabled={false}
-            title="x"
-            type="button"
-            className={`flex items-center justify-center border-2 px-2 rounded-lg hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'}`}
-            onClick={() => setMessage('')}
-          />
-        </div>
-      )}
+      {message && <Toast message={message} isError={isError} />}
       <form
         className="w-96 border-2 border-blue-950 p-10 rounded-lg"
         onSubmit={handleSubmit}

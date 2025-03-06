@@ -1,6 +1,8 @@
 'use client'
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
+import { Toast } from '@/components/toast'
+import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
 import { sendEmail } from '@/services/http'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
@@ -16,6 +18,10 @@ export function LoginForm() {
   const [messageSendEmail, setMessageSendEmail] = useState('')
   const [isError, setIsError] = useState(false)
   const router = useRouter()
+  useAutoClearMessage({
+    setMessage: setMessageSendEmail,
+    message: messageSendEmail,
+  })
 
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target
@@ -102,20 +108,7 @@ export function LoginForm() {
         </div>
       )}
       {messageSendEmail && (
-        <div className="text-xl uppercase font-bold mb-6 gap-4 flex justify-between items-center mt-2">
-          <p
-            className={`text-lg ${isError ? 'text-red-700' : 'text-blue-950'}`}
-          >
-            {messageSendEmail}
-          </p>
-          <Button
-            isButtonDisabled={false}
-            title="x"
-            type="button"
-            className={`flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-7 h-7 text-xs ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'} `}
-            onClick={() => setMessageSendEmail('')}
-          />
-        </div>
+        <Toast message={messageSendEmail} isError={isError} />
       )}
       <form
         onSubmit={handleSubmit}

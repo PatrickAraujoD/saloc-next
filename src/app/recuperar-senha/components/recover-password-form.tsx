@@ -1,6 +1,8 @@
 'use client'
 import { Button } from '@/components/button'
 import { Input } from '@/components/input'
+import { Toast } from '@/components/toast'
+import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
 import { recoverUserPassword } from '@/services/http'
 import { useRouter } from 'next/navigation'
 import { ChangeEvent, FormEvent, useState } from 'react'
@@ -13,6 +15,8 @@ export function RecoverPasswordForm() {
   const [messageForm, setMessageForm] = useState('')
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
+
+  useAutoClearMessage({ message, setMessage })
 
   const query = new URLSearchParams(window.location.search)
   const tokenValue = query.get('token')
@@ -74,20 +78,7 @@ export function RecoverPasswordForm() {
           </div>
         </div>
       )}
-      {message && (
-        <div className="text-xl uppercase font-bold mb-6 gap-4 flex justify-between items-center mt-10">
-          <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
-            {message}
-          </p>
-          <Button
-            isButtonDisabled={false}
-            title="x"
-            type="button"
-            className={`flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'} `}
-            onClick={() => setMessage('')}
-          />
-        </div>
-      )}
+      {message && <Toast message={message} isError={isError} />}
 
       <form
         className="w-full sm:w-80 border-blue-950 border-2 p-10 rounded-lg flex flex-col items-center justify-center"

@@ -14,6 +14,8 @@ import {
   requestAcceptAll,
   createRequest,
 } from '@/services/http'
+import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
+import { Toast } from './toast'
 
 export interface SelectedClassesProps {
   id: number
@@ -97,6 +99,7 @@ export function ClassroomList({
   const [checkedItems, setCheckedItems] = useState<number[]>([])
   const token = session?.token
   const origin = session?.user.sector?.id
+  useAutoClearMessage({ message, setMessage })
 
   async function handleAcceptClass(idRequest: number) {
     await updateStatus({
@@ -320,20 +323,7 @@ export function ClassroomList({
 
   return (
     <div className="overflow-x-auto mb-10">
-      {message && (
-        <div className="text-xl uppercase font-bold mb-4 flex justify-between items-center">
-          <p className={`${isError ? 'text-red-700' : 'text-blue-950'}`}>
-            {message}
-          </p>
-          <Button
-            isButtonDisabled={false}
-            title="x"
-            type="button"
-            className={`flex items-center justify-center border-2 px-2 rounded-lg   hover:bg-white transition-colors w-9 h-9 ${isError ? 'bg-red-700 border-red-700 hover:text-red-700 hover:border-red-700' : 'bg-blue-950 border-blue-950 hover:text-blue-950 hover:border-blue-950'} `}
-            onClick={() => setMessage('')}
-          />
-        </div>
-      )}
+      {message && <Toast message={message} isError={isError} />}
       {classes?.length > 0 ? (
         <div className="overflow-auto">
           {session?.user.sector && showActions && (

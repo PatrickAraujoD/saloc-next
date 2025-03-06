@@ -110,7 +110,6 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
 
     if (isRegisterClassAllocate) {
       const scheduleResponse = await fecthSchedule(Number(idClass))
-      console.log(scheduleResponse)
       setListSchedule(scheduleResponse)
       setListRooms([])
       setValueRoom(0)

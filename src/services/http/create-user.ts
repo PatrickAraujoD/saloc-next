@@ -20,7 +20,6 @@ export async function createUser(token: string, body: Body) {
     if (error instanceof AxiosError) {
       const errorMessage =
         error?.response?.data?.message || 'Ocorreu um erro desconhecido'
-      console.log(errorMessage)
       return { error: errorMessage }
     }
   }

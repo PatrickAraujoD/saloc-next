@@ -44,7 +44,6 @@ const usePdfGenerator = () => {
 
       for (const row of content.rows) {
         for (const index of columnsIndexesToRemove) {
-          console.log(index)
           if (index < row.cells.length) {
             row.deleteCell(index)
           }

@@ -72,7 +72,6 @@ export default function Menu({
               if (session?.user.sector.course && generatePdfClassSections) {
                 generatePdfClassSections()
               } else {
-                console.log('dsjdhsjd')
                 if (generatePdfReport) {
                   if (session?.user.course) {
                     generatePdfReport('course', session?.user.course.name)
@@ -152,7 +151,6 @@ export default function Menu({
             if (session?.user.sector.course && generatePdfClassSections) {
               generatePdfClassSections()
             } else {
-              console.log('dsjdhsjd')
               if (generatePdfReport) {
                 if (session?.user.course) {
                   generatePdfReport('course', session?.user.course.name)

@@ -18,9 +18,12 @@ export function RegisterForm({ session }: RegisterFormProps) {
   const [message, setMessage] = useState('')
   const [messageForm, setMessageForm] = useState('')
   const [isError, setIsError] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const token = session?.token
+  useAutoClearMessage({ setMessage, message })
 
   async function registerUser(event: FormEvent) {
+    setIsLoading(true)
     event.preventDefault()
     const formData = new FormData(event.target as HTMLFormElement)
 
@@ -29,7 +32,6 @@ export function RegisterForm({ session }: RegisterFormProps) {
     const password = formData.get('password') as string
     const confirmPassword = formData.get('confirmPassword') as string
     const sectorId = Number(formData.get('sector') as string)
-    useAutoClearMessage({ setMessage, message })
 
     if (password !== confirmPassword) {
       setMessageForm('As senhas devem ser iguais.')
@@ -54,6 +56,7 @@ export function RegisterForm({ session }: RegisterFormProps) {
       setMessage(response.error)
       setIsError(true)
     }
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -115,7 +118,12 @@ export function RegisterForm({ session }: RegisterFormProps) {
             {messageForm}
           </div>
         )}
-        <Button type="submit" title="registrar" isButtonDisabled={false} />
+        <Button
+          type="submit"
+          title="registrar"
+          isButtonDisabled={isLoading}
+          isLoading={isLoading}
+        />
       </form>
     </main>
   )

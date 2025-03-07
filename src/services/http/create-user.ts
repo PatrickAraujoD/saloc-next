@@ -19,7 +19,8 @@ export async function createUser(token: string, body: Body) {
   } catch (error) {
     if (error instanceof AxiosError) {
       const errorMessage =
-        error?.response?.data?.message || 'Ocorreu um erro desconhecido'
+        error?.response?.data?.message ||
+        'Não foi possível cadastrar usuário. Tente novamente mais tarde.'
       return { error: errorMessage }
     }
   }

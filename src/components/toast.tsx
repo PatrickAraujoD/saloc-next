@@ -5,7 +5,7 @@ type Props = {
 
 export function Toast({ message, isError = false }: Props) {
   return (
-    <div className="toast toast-top toast-center">
+    <div className="toast toast-top toast-center z-10">
       {isError ? (
         <div role="alert" className="alert alert-error">
           <svg

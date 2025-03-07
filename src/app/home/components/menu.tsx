@@ -69,7 +69,7 @@ export default function Menu({
             title="relatório"
             className="border-transparent w-full hover:text-white"
             onClick={() => {
-              if (session?.user.sector.course && generatePdfClassSections) {
+              if (session?.user?.sector?.course && generatePdfClassSections) {
                 generatePdfClassSections()
               } else {
                 if (generatePdfReport) {
@@ -148,7 +148,7 @@ export default function Menu({
           type="button"
           className="sm:h-16 xl:h-12"
           onClick={() => {
-            if (session?.user.sector.course && generatePdfClassSections) {
+            if (session?.user?.sector?.course && generatePdfClassSections) {
               generatePdfClassSections()
             } else {
               if (generatePdfReport) {

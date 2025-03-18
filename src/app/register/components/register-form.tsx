@@ -33,8 +33,19 @@ export function RegisterForm({ session }: RegisterFormProps) {
     const confirmPassword = formData.get('confirmPassword') as string
     const sectorId = Number(formData.get('sector') as string)
 
-    if (password !== confirmPassword) {
+    if (password.length < 8) {
+      setMessageForm('A senha precisa ter no mínimo 8 caracteres.')
+      setIsLoading(false)
+      return
+    } else if (confirmPassword.length < 8) {
+      setMessageForm(
+        'A confirmação de senha precisa ter no mínimo 8 caracteres.',
+      )
+      setIsLoading(false)
+      return
+    } else if (password !== confirmPassword) {
       setMessageForm('As senhas devem ser iguais.')
+      setIsLoading(false)
       return
     } else {
       setMessageForm('')

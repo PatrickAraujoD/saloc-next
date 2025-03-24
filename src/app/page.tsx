@@ -1,4 +1,5 @@
 'use client'
+import { Loading } from '@/components/Loading'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
@@ -9,5 +10,9 @@ export default function Page() {
     router.push('/home')
   })
 
-  return <h1 className="flex-1">Carregando...</h1>
+  return (
+    <div className="flex-1">
+      <Loading description="quase lá! estamos preparando tudo para você." />
+    </div>
+  )
 }

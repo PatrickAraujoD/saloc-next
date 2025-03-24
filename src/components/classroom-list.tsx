@@ -16,6 +16,7 @@ import {
 } from '@/services/http'
 import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
 import { Toast } from './toast'
+import { Loading } from './Loading'
 
 export interface SelectedClassesProps {
   id: number
@@ -93,6 +94,7 @@ export function ClassroomList({
     useState<boolean>(false)
   const [isLoadingAcceptAllRequest, setIsLoadingAcceptAllRequest] =
     useState<boolean>(false)
+  const [isLoadingAcceptRequest, setIsLoadingAcceptRequest] = useState(false)
   const [selectedRequests, setSelectedRequests] = useState<number[]>([])
   const [selectedClass, setSelectedClass] = useState<SelectedClasse | null>()
   const [selectedClasses, setSelectedClasses] = useState<
@@ -107,6 +109,7 @@ export function ClassroomList({
   useAutoClearMessage({ message, setMessage })
 
   async function handleAcceptClass(idRequest: number) {
+    setIsLoadingAcceptRequest(true)
     await updateStatus({
       idRequest,
       token,
@@ -115,6 +118,7 @@ export function ClassroomList({
     if (updateTable) {
       await updateTable()
     }
+    setIsLoadingAcceptRequest(false)
   }
 
   const formatRoomBlock = (scheduleComplet: string, name: string) => {
@@ -588,6 +592,9 @@ export function ClassroomList({
         scheduleValue={selectedClass?.scheduleValue}
         session={session}
       />
+      {isLoadingAcceptRequest && (
+        <Loading description="processando solicitação" />
+      )}
     </div>
   )
 }

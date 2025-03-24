@@ -1,9 +1,11 @@
 import axios, { AxiosInstance } from 'axios'
 import { config } from 'dotenv'
-import { getServerSession } from 'next-auth'
 
 config()
 
+const timeout = 24 * 60 * 60 // 24 hour
+
 export const api: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL!,
+  timeout,
 })

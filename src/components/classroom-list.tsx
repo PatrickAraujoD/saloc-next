@@ -91,6 +91,8 @@ export function ClassroomList({
   const [isLoadingSendAll, setIsLoadingSendAll] = useState<boolean>(false)
   const [isLoadingRequestModal, setIsLoadingRequestModal] =
     useState<boolean>(false)
+  const [isLoadingAcceptAllRequest, setIsLoadingAcceptAllRequest] =
+    useState<boolean>(false)
   const [selectedRequests, setSelectedRequests] = useState<number[]>([])
   const [selectedClass, setSelectedClass] = useState<SelectedClasse | null>()
   const [selectedClasses, setSelectedClasses] = useState<
@@ -218,6 +220,7 @@ export function ClassroomList({
   }
 
   const handleAcceptSelectedRequests = async () => {
+    setIsLoadingAcceptAllRequest(true)
     const response = await requestAcceptAll({
       token,
       requests: selectedRequests,
@@ -233,6 +236,7 @@ export function ClassroomList({
       setSelectedRequests([])
       setCheckedItems([])
       setIsCheckedAll(false)
+      setIsLoadingAcceptAllRequest(false)
     } else {
       setMessage(response.error)
       setIsError(true)
@@ -350,20 +354,21 @@ export function ClassroomList({
                   Selecionar todas as turmas
                 </label>
               </div>
-              <div>
+              <div className="flex items-center justify-center">
                 <Button
-                  isButtonDisabled={false}
+                  isButtonDisabled={isLoadingAcceptAllRequest}
                   type="button"
                   title="enviar selecionadas"
-                  className={`text-sm ${!session?.user.sector.course ? 'mr-4' : ''}`}
+                  className={`text-sm h-14 xl:h-12 w-20 md:w-48 uppercase ${!session?.user.sector.course ? 'mr-4' : ''}`}
                   onClick={() => setIsModalOpen(true)}
                 />
                 {!session?.user.sector.course && (
                   <Button
-                    isButtonDisabled={false}
+                    isButtonDisabled={isLoadingAcceptAllRequest}
                     type="button"
                     title="aceitar solicitações"
-                    className="text-sm"
+                    isLoading={isLoadingAcceptAllRequest}
+                    className="text-sm h-14 xl:h-12 w-20 md:w-48 uppercase"
                     onClick={() => handleAcceptSelectedRequests()}
                   />
                 )}

@@ -13,6 +13,7 @@ interface SendAllRequestProps {
   message: string
   classes: SelectedClassesProps[]
   token?: string
+  isLoading: boolean
 }
 
 export function SendAllRequest({
@@ -23,6 +24,7 @@ export function SendAllRequest({
   message,
   classes,
   token,
+  isLoading,
 }: SendAllRequestProps) {
   const [sectores, setSectores] = useState([])
   const [destination, setDestination] = useState(0)
@@ -68,17 +70,19 @@ export function SendAllRequest({
         />
         <div className="flex justify-between mt-6">
           <Button
-            isButtonDisabled={false}
+            isButtonDisabled={isLoading}
             title="fechar"
             type="button"
             onClick={onClose}
-            className="uppercase mr-2 bg-gray-400 p-2 rounded font-light hover:text-gray-400 hover:border-gray-400"
+            disabled={isLoading}
+            className={`uppercase mr-2 bg-gray-400 p-2 rounded font-light hover:text-gray-400 hover:border-gray-400`}
           />
           <Button
-            isButtonDisabled={false}
+            isButtonDisabled={isLoading}
             type="button"
             title="confirmar"
-            className="uppercase bg-blue-950 text-white p-2 rounded font-light"
+            className={`uppercase bg-blue-950 text-white p-2 rounded font-light`}
+            isLoading={isLoading}
             onClick={() => handleOnConfirm()}
           />
         </div>

@@ -11,6 +11,7 @@ interface SendRequestModalProps {
   idClass?: number | null
   session: SessionProps | null
   scheduleValue?: string
+  isLoading: boolean
 }
 
 interface SchedulesProps {
@@ -26,6 +27,7 @@ export function SendRequestModal({
   idClass,
   scheduleValue,
   session,
+  isLoading,
 }: SendRequestModalProps) {
   const [schedules, setSchedules] = useState<SchedulesProps[]>([])
   const [sectores, setSectores] = useState([])
@@ -99,16 +101,17 @@ export function SendRequestModal({
         />
         <div className="mt-4 flex justify-center">
           <Button
-            isButtonDisabled={false}
+            isButtonDisabled={isLoading}
             title="fechar"
             type="button"
             onClick={onClose}
             className="uppercase mr-2 bg-gray-400 p-2 rounded font-light hover:text-gray-400 hover:border-gray-400"
           />
           <Button
-            isButtonDisabled={false}
+            isButtonDisabled={isLoading}
             type="button"
             title="confirmar"
+            isLoading={isLoading}
             onClick={() => onConfirm(schedule, destination)}
             className="uppercase bg-blue-950 text-white p-2 rounded font-light"
           />

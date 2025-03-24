@@ -88,6 +88,9 @@ export function ClassroomList({
   const [selectedRequestId, setSelectedRequestId] = useState<number | null>(
     null,
   )
+  const [isLoadingSendAll, setIsLoadingSendAll] = useState<boolean>(false)
+  const [isLoadingRequestModal, setIsLoadingRequestModal] =
+    useState<boolean>(false)
   const [selectedRequests, setSelectedRequests] = useState<number[]>([])
   const [selectedClass, setSelectedClass] = useState<SelectedClasse | null>()
   const [selectedClasses, setSelectedClasses] = useState<
@@ -192,6 +195,7 @@ export function ClassroomList({
     classes: SelectedClassesProps[],
     destination: number,
   ) => {
+    setIsLoadingSendAll(true)
     const isSendAll = await requestSendAll({
       destination,
       classes,
@@ -209,6 +213,7 @@ export function ClassroomList({
       setMessage('Erro ao enviar as solicitações')
       setIsError(true)
     }
+    setIsLoadingSendAll(false)
     handleCloseModal()
   }
 
@@ -305,6 +310,7 @@ export function ClassroomList({
     schedule: string,
     destination: number,
   ) => {
+    setIsLoadingRequestModal(true)
     const response = await createRequest({
       destination,
       schedule,
@@ -318,6 +324,7 @@ export function ClassroomList({
     if (response.error) {
       setMessage(response.error)
     }
+    setIsLoadingRequestModal(false)
     handleCloseModalSendRequest()
   }
 
@@ -562,11 +569,13 @@ export function ClassroomList({
         classes={selectedClasses}
         setIsCheckedAll={setIsCheckedAll}
         onClose={handleCloseModal}
+        isLoading={isLoadingSendAll}
         message="informe o setor que deseja enviar as solicitações"
         onConfirm={handleConfirmSendSelectedClasses}
         token={token}
       />
       <SendRequestModal
+        isLoading={isLoadingRequestModal}
         isOpen={isModalOpenSendRequest}
         onClose={handleCloseModalSendRequest}
         onConfirm={handleConfirmSendModal}

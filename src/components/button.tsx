@@ -21,7 +21,7 @@ export function Button({
     <button
       type={type}
       disabled={isButtonDisabled}
-      className={`font-bold uppercase w-40 h-10 rounded-md hover:border-blue-950 hover:text-blue-950 border-2 text-white hover:bg-transparent transition-colors   ${isLoading ? 'border-blue-950 text-blue-950 bg-white' : `bg-blue-950  border-transparent`} ${className}`}
+      className={`font-bold uppercase w-40 h-10 rounded-md hover:border-blue-950 hover:text-blue-950 border-2 text-white hover:bg-transparent transition-colors   ${isLoading ? 'border-blue-950 text-blue-950 bg-white' : `bg-blue-950  border-transparent`} ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'} ${className}`}
       {...buttonProps}
     >
       {isLoading ? (

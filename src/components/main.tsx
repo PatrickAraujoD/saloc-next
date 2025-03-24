@@ -135,8 +135,8 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
       token,
     })
     if (!response.error) {
-      setMessage(response.message)
       await handleUpdateTable()
+      setMessage(response.message)
       setIsError(false)
     } else {
       setMessage(response.error)
@@ -432,12 +432,16 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
 
         <div className="flex items-center mt-4 gap-4 flex-wrap w-full justify-between sm:justify-start">
           <Button
-            isButtonDisabled={isButtonDisabled}
+            isButtonDisabled={
+              isLoadingButtonSigaa ||
+              isLoadingAllocateAutomatic ||
+              isButtonDisabled
+            }
             name="consultar"
             type="submit"
             title="consultar"
             isLoading={isLoading}
-            className={`h-14 xl:h-12 w-20 md:w-48 uppercase ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+            className={`h-14 xl:h-12 w-20 md:w-48 uppercase`}
           />
           {session && session.user.sector && (
             <Button
@@ -445,13 +449,21 @@ export function Main({ session, periods, courses, teachers }: MainProps) {
               type="button"
               onClick={allocationAutomatic}
               isLoading={isLoadingAllocateAutomatic}
-              isButtonDisabled={isLoadingAllocateAutomatic}
+              isButtonDisabled={
+                isLoadingButtonSigaa ||
+                isLoadingAllocateAutomatic ||
+                isButtonDisabled
+              }
               className="h-14 xl:h-12 w-20 md:w-48"
             />
           )}
           {session && session.user.sector?.course && (
             <Button
-              isButtonDisabled={isLoadingButtonSigaa}
+              isButtonDisabled={
+                isLoadingButtonSigaa ||
+                isLoadingAllocateAutomatic ||
+                isButtonDisabled
+              }
               title="importar do sigaa"
               type="button"
               isLoading={isLoadingButtonSigaa}

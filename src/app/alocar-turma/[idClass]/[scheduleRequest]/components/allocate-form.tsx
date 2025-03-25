@@ -12,6 +12,7 @@ interface AllocateFormProps {
   onRoomChange: (event: ChangeEvent<HTMLSelectElement>) => Promise<void>
   onSubmit: (event: FormEvent<HTMLFormElement>) => Promise<void>
   isButtonDisabled: boolean
+  isLoading: boolean
 }
 
 export function AllocateForm({
@@ -23,6 +24,7 @@ export function AllocateForm({
   isButtonDisabled,
   onScheduleChange,
   onRoomChange,
+  isLoading,
 }: AllocateFormProps) {
   return (
     <section>
@@ -46,10 +48,11 @@ export function AllocateForm({
           />
         </div>
         <Button
-          isButtonDisabled={isButtonDisabled}
+          isButtonDisabled={isButtonDisabled || isLoading}
+          isLoading={isLoading}
           title="alocar"
           type="submit"
-          className={`w-full md:w-28 md:absolute mt-2 flex items-center justify-center right-10 ${isButtonDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+          className={`w-full md:w-28 md:absolute mt-2 flex items-center justify-center right-10`}
         />
       </form>
     </section>

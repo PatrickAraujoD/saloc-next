@@ -14,6 +14,7 @@ import { ClassInfoSection } from './class-info-section'
 import { AllocateForm } from './allocate-form'
 import { ConfirmationModal } from '@/components/confirmation-modal'
 import { Class, Room, SessionProps } from '@/types'
+import { Loading } from '@/components/Loading'
 
 interface ListSchedule {
   id: number
@@ -39,6 +40,12 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
   const [valueRoom, setValueRoom] = useState<number>(0)
   const [listRooms, setListRooms] = useState<Room[]>([])
   const [classInfo, setClassInfo] = useState<Class | null>(null)
+  const [isLoadingRooms, setIsLoadingRooms] = useState(false)
+  const [isLoadingSubmitClass, setIsLoadingSubmitClass] = useState(false)
+  const [messageInfo, setMessageInfo] = useState(
+    'identificando salas livres de conflitos.',
+  )
+  const [isLoadingRemoveAllocate, setIsLoadingRemoveAllocate] = useState(false)
   const [classInfoTable, setClassInfoTable] = useState<ClassInfoTable[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [valueDelete, setValueDelete] = useState<ClassInfoTable | null>(null)
@@ -67,6 +74,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
   }
 
   async function handleCaptureSchedule(event: ChangeEvent<HTMLSelectElement>) {
+    setIsLoadingRooms(true)
     const schedule = event.target.value
     const idPeriod = classInfo?.period.id
     setSchedule(schedule)
@@ -76,6 +84,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
     } else {
       setListRooms([])
     }
+    setIsLoadingRooms(false)
   }
 
   async function handleCaptureValueRoom(event: ChangeEvent<HTMLSelectElement>) {
@@ -95,6 +104,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
   }
 
   async function handleSubmit(event: FormEvent) {
+    setIsLoadingSubmitClass(true)
     event.preventDefault()
     const decodedScheduleRequest = Array.isArray(scheduleRequest)
       ? scheduleRequest.join(',')
@@ -110,12 +120,13 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
 
     if (isRegisterClassAllocate) {
       const scheduleResponse = await fecthSchedule(Number(idClass))
-      setListSchedule(scheduleResponse)
+      const tableAllocateInfo = await fecthRoomAllocate()
+      setClassInfoTable(tableAllocateInfo)
       setListRooms([])
       setValueRoom(0)
-      const tableAllocateinfo = await fecthRoomAllocate()
-      setClassInfoTable(tableAllocateinfo)
+      setListSchedule(scheduleResponse)
     }
+    setIsLoadingSubmitClass(false)
   }
 
   function openModal(value: ClassInfoTable) {
@@ -129,16 +140,20 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
   }
 
   async function handleDeleteRoom() {
+    setIsModalOpen(false)
+    setIsLoadingRemoveAllocate(true)
     if (valueDelete) {
+      setMessageInfo('Excluindo alocação.')
       await deleteAlocacao(valueDelete.id, token)
       setClassInfoTable((classInfo) =>
         classInfo.filter((room) => room.id !== valueDelete.id),
       )
-      setIsModalOpen(false)
-
+      setMessageInfo('Identificando horários disponíveis.')
       const response = await fecthSchedule(Number(idClass))
       setSchedule(response)
     }
+    setIsLoadingRemoveAllocate(false)
+    setMessageInfo('identificando salas livres de conflitos.')
   }
 
   async function fecthRoomAllocate() {
@@ -176,6 +191,9 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
 
   return (
     <main className="flex-grow p-6 md:p-10">
+      {(isLoadingRooms || isLoadingRemoveAllocate) && (
+        <Loading description={messageInfo} />
+      )}
       <section>
         <h2 className="font-bold uppercase mb-2">informações</h2>
         <ClassInfoSection classInfo={classInfo} />
@@ -188,6 +206,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
             listRooms={listRooms}
             schedule={schedule}
             valueRoom={valueRoom}
+            isLoading={isLoadingSubmitClass}
             onScheduleChange={handleCaptureSchedule}
             onRoomChange={handleCaptureValueRoom}
             onSubmit={handleSubmit}

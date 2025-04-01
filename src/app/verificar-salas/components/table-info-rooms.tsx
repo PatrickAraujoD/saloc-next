@@ -32,6 +32,7 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
   const [message, setMessage] = useState('')
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingRemove, setIsLoadingRemove] = useState(false)
   const token = session.token
   useAutoClearMessage({ setMessage, message })
 
@@ -48,17 +49,22 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
   }
 
   async function handleDeleteRoom() {
+    setIsLoadingRemove(true)
     if (roomToDelete) {
       const response = await deleteRoom(roomToDelete.id, token)
-      setRoomsList((prevRoomsList) =>
-        prevRoomsList.filter((room) => room.id !== roomToDelete.id),
-      )
+      console.log(response)
       if (response.error) {
         setMessage(response.error)
+        setIsLoadingRemove(false)
         setIsModalOpen(false)
         setIsError(true)
       } else {
+        console.log(response)
+        setRoomsList((prevRoomsList) =>
+          prevRoomsList.filter((room) => room.id !== roomToDelete.id),
+        )
         setMessage('Sala deletada com sucesso!')
+        setIsLoadingRemove(false)
         setIsModalOpen(false)
         setIsError(false)
       }
@@ -162,6 +168,7 @@ export function TableInfoRooms({ session }: TableInfoRoomsProps) {
         isOpen={isModalOpen}
         onClose={closeModal}
         onConfirm={handleDeleteRoom}
+        isLoading={isLoadingRemove}
         message="Tem certeza que deseja excluir esta sala?"
       />
     </>

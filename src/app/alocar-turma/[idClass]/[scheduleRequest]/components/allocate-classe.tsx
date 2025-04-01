@@ -223,6 +223,7 @@ export function AllocateClasse({ session }: AllocateClasseProps) {
         </div>
         <ConfirmationModal
           isOpen={isModalOpen}
+          isLoading={false}
           onClose={closeModal}
           onConfirm={handleDeleteRoom}
           message="Tem certeza que deseja excluir esta alocação de sala?"

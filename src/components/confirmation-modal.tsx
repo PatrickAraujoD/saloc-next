@@ -1,10 +1,12 @@
 import React from 'react'
+import { Button } from './button'
 
 interface ConfirmationModalProps {
   isOpen: boolean
   onClose: () => void
   onConfirm: () => void
   message: string
+  isLoading: boolean
 }
 
 export function ConfirmationModal({
@@ -12,6 +14,7 @@ export function ConfirmationModal({
   onClose,
   onConfirm,
   message,
+  isLoading,
 }: ConfirmationModalProps) {
   if (!isOpen) return null
 
@@ -20,18 +23,20 @@ export function ConfirmationModal({
       <div className="flex flex-col bg-white p-4 rounded-lg w-96 h-44 text-center justify-center items-center gap-y-4">
         <p>{message}</p>
         <div className="mt-4 flex justify-end">
-          <button
+          <Button
+            isButtonDisabled={isLoading}
             onClick={onClose}
-            className="uppercase mr-2 bg-gray-200 p-2 rounded"
-          >
-            cancelar
-          </button>
-          <button
+            title="cancelar"
+            className="uppercase mr-2 bg-gray-500 p-2 rounded hover:border-gray-500 hover:text-gray-500"
+          />
+          <Button
+            isButtonDisabled={isLoading}
+            isLoading={isLoading}
             onClick={onConfirm}
-            className="uppercase bg-red-700 text-white p-2 rounded"
-          >
-            confirmar
-          </button>
+            title="confirmar"
+            colorSpin="red"
+            className="uppercase bg-red-700 text-white p-2 rounded hover:border-red-700 hover:text-red-700"
+          />
         </div>
       </div>
     </div>

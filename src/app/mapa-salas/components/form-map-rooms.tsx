@@ -28,6 +28,7 @@ export function FormMapRoom({
   const [listPeriods, setListPeriods] = useState<Period[]>([])
   const [roomId, setRoomId] = useState<number | null>(null)
   const [periodId, setPeriodId] = useState<number | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const token = session.token
 
   async function fetchRooms() {
@@ -41,6 +42,7 @@ export function FormMapRoom({
   }
 
   async function handleSubmit(event: React.FormEvent) {
+    setIsLoading(true)
     event.preventDefault()
     if (roomId !== null && periodId !== null) {
       try {
@@ -52,6 +54,8 @@ export function FormMapRoom({
         handleSetAllocateClasses(response)
       } catch (error) {
         console.error('Error allocating classes:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
   }
@@ -87,8 +91,9 @@ export function FormMapRoom({
         selectRef={selectPeriodRef}
       />
       <Button
-        isButtonDisabled={false}
-        title="Pesquisar"
+        isButtonDisabled={isLoading}
+        isLoading={isLoading}
+        title="pesquisar"
         type="submit"
         className="mt-5"
       />

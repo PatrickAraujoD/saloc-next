@@ -15,6 +15,11 @@ import {
 import { useAutoClearMessage } from '@/hooks/use-auto-clear-message'
 import { Toast } from '@/components/toast'
 
+interface DataSend {
+  teachers: string[] // Professores selecionados, que é um array de strings
+  id_course?: number // O id_course é opcional
+}
+
 interface ProfessorOption {
   value: string
   label: string
@@ -52,10 +57,21 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
 
     const formData = new FormData(event.target as HTMLFormElement)
     const data = Object.fromEntries(formData.entries())
-    const dataSend = {
-      ...data,
-      teachers: selectedProfessores,
+    let dataSend
+    if (session.user.sector?.course && session.user.course?.id) {
+      dataSend = {
+        ...data,
+        id_course: session.user.course?.id,
+        teachers: selectedProfessores,
+      }
+    } else {
+      dataSend = {
+        ...data,
+        teachers: selectedProfessores,
+      }
     }
+
+    console.log(dataSend)
 
     const response = await createClass({
       data: dataSend,
@@ -96,14 +112,18 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
 
   useEffect(() => {
     async function getDisciplines() {
-      if (course > 0) {
+      if (course > 0 && !session.user.sector?.course) {
         const disciplines = await listDiscipline(course)
+        setListDisciplines(disciplines)
+      } else if (session.user.sector?.course) {
+        const valueCourse = session.user.course.id
+        const disciplines = await listDiscipline(valueCourse)
         setListDisciplines(disciplines)
       }
     }
 
     getDisciplines()
-  }, [course])
+  }, [course, session.user.sector?.course, session.user.course?.id])
 
   const customStyles = {
     control: (base: any) => ({
@@ -141,12 +161,14 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
           Registrar Turma
         </h1>
 
-        <SelectDiscipline
-          options={listCourses}
-          nameLabel="Cursos"
-          name="id_course"
-          onChange={(e) => setCourse(Number(e.target.value))}
-        />
+        {!session.user.sector?.course && (
+          <SelectDiscipline
+            options={listCourses}
+            nameLabel="Cursos"
+            name="id_course"
+            onChange={(e) => setCourse(Number(e.target.value))}
+          />
+        )}
 
         <SelectDiscipline
           options={listDisciplines}
@@ -158,10 +180,14 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
 
         {discipline === -1 && (
           <div>
-            <Input name="name" nameLabel="disciplina" type="text" />
+            <Input name="name" nameLabel="nome da disciplina" type="text" />
             <Input name="code" nameLabel="código" type="text" />
             <Input name="departament" nameLabel="departamento" type="text" />
-            <Input name="period" nameLabel="período" type="text" />
+            <Input
+              name="period"
+              nameLabel="período da disciplina"
+              type="text"
+            />
           </div>
         )}
 
@@ -196,7 +222,7 @@ export function FormRegisterClass({ session }: FormRegisterClassProps) {
         </div>
 
         <Button
-          isButtonDisabled={isButtonDisabled}
+          isButtonDisabled={false}
           title="Enviar"
           className="mt-4 w-full"
           isLoading={isLoading}
